@@ -1,5 +1,48 @@
 ﻿@page "/register"
+@using static AkiApplication.Controllers.BankController
 
+<RadzenRow>
+    <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
+        <RadzenDropDown Data=@Years TValue="string" @bind-Value=@YearSelect AllowFiltering="true">
+        </RadzenDropDown>
+        年
+        <RadzenDropDown Data=@Months TValue="string" @bind-Value=@MonthSelect AllowFiltering="true">
+        </RadzenDropDown>
+        月
+    </RadzenColumn>
+    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
+        入金
+        <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
+                        PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                        TItem="TransactionDetails" Data="receipt">
+            <Columns>
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Mony" Title="金額">
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    </RadzenColumn>
+
+    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
+        出金
+        <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
+                        PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                        TItem="TransactionDetails" Data="disbursement">
+            <Columns>
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Mony" Title="金額">
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    </RadzenColumn>
+</RadzenRow>
 @code {
-
+    List<TransactionDetails> receipt = new List<TransactionDetails>();
+    List<TransactionDetails> disbursement = new List<TransactionDetails>();
+    List<string> Years = new List<string>() { "2023", "2022", "2021", "2020", "2019", "2018", "2017" };
+    List<string> Months = new List<string>() { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" };
+    string YearSelect = "2023";
+    string MonthSelect = "1";
 }
