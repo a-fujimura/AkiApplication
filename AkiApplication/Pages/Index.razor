@@ -1,0 +1,222 @@
+﻿@page "/"
+@using System.Globalization
+@using static AkiApplication.Controllers.BankController
+
+<PageTitle>Index</PageTitle>
+
+<RadzenRow>
+    <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
+        年：
+        <RadzenDropDown Data=@Years TValue="string" @bind-Value=@YearSelect AllowFiltering="true">
+        </RadzenDropDown>
+    </RadzenColumn>
+
+    <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
+        <RadzenChart>
+            <RadzenLineSeries Interpolation="@interpolation" Data="@revenue2020" CategoryProperty="Date" Title="2019" LineType="LineType.Dashed" ValueProperty="Revenue" />
+            <RadzenColumnSeries Data="@revenue2019" CategoryProperty="Date" Title="2020" LineType="LineType.Dashed" ValueProperty="Revenue" />
+            <RadzenCategoryAxis Padding="20" Formatter="@FormatAsMonth" />
+            <RadzenValueAxis Formatter="@FormatAsUSD">
+                <RadzenGridLines Visible="true" />
+                <RadzenAxisTitle Text="入出金" />
+            </RadzenValueAxis>
+        </RadzenChart>
+    </RadzenColumn>
+     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
+        月：
+        <RadzenDropDown Data=@Months TValue="string" @bind-Value=@MonthSelect AllowFiltering="true">
+        </RadzenDropDown>
+    </RadzenColumn>
+    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
+        入金
+        <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
+                        PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                        TItem="TransactionDetails" Data="receipt">
+            <Columns>
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Mony" Title="金額">
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    </RadzenColumn>
+
+    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
+        出金
+        <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
+                        PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                        TItem="TransactionDetails" Data="disbursement">
+            <Columns>
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Mony" Title="金額">
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    </RadzenColumn>
+
+</RadzenRow>
+
+
+@code {
+    Interpolation interpolation = Interpolation.Line;
+    List<TransactionDetails> receipt = new List<TransactionDetails>();
+    List<TransactionDetails> disbursement = new List<TransactionDetails>();
+    List<string> Years = new List<string>() { "2023年", "2022年", "2021年", "2020年", "2019年", "2018年", "2017年" };
+    List<string> Months = new List<string>() { "1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月" };
+    string YearSelect = "2023年";
+    string MonthSelect = "1月";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        receipt.Add(new TransactionDetails());
+        await Task.Delay(100);
+    }
+
+    class DataItem
+    {
+        public string Date { get; set; }
+        public double Revenue { get; set; }
+    }
+
+    string FormatAsUSD(object value)
+    {
+        return ((double)value).ToString("C0");
+    }
+
+    string FormatAsMonth(object value)
+    {
+        if (value != null)
+        {
+            return Convert.ToDateTime(value).ToString("MMM");
+        }
+
+        return string.Empty;
+    }
+
+    DataItem[] revenue2019 = new DataItem[] {
+        new DataItem
+        {
+            Date = ("2019-01"),
+            Revenue = 234000
+        },
+        new DataItem
+        {
+            Date = ("2019-02"),
+            Revenue = 269000
+        },
+        new DataItem
+        {
+            Date = ("2019-03"),
+            Revenue = 233000
+        },
+        new DataItem
+        {
+            Date = ("2019-04"),
+            Revenue = 244000
+        },
+        new DataItem
+        {
+            Date = ("2019-05"),
+            Revenue = 214000
+        },
+        new DataItem
+        {
+            Date = ("2019-06"),
+            Revenue = 253000
+        },
+        new DataItem
+        {
+            Date = ("2019-07"),
+            Revenue = 274000
+        },
+        new DataItem
+        {
+            Date = ("2019-08"),
+            Revenue = 284000
+        },
+        new DataItem
+        {
+            Date = ("2019-09"),
+            Revenue = 273000
+        },
+        new DataItem
+        {
+            Date = ("2019-10"),
+            Revenue = 282000
+        },
+        new DataItem
+        {
+            Date = ("2019-11"),
+            Revenue = 289000
+        },
+        new DataItem
+        {
+            Date = ("2019-12"),
+            Revenue = 294000
+        }
+    };
+
+    DataItem[] revenue2020 = new DataItem[] {
+        new DataItem
+        {
+            Date = ("2019-01"),
+            Revenue = 334000
+        },
+        new DataItem
+        {
+            Date = ("2019-02"),
+            Revenue = 369000
+        },
+        new DataItem
+        {
+            Date = ("2019-03"),
+            Revenue = 333000
+        },
+        new DataItem
+        {
+            Date = ("2019-04"),
+            Revenue = 344000
+        },
+        new DataItem
+        {
+            Date = ("2019-05"),
+            Revenue = 314000
+        },
+        new DataItem
+        {
+            Date = ("2019-06"),
+            Revenue = 353000
+        },
+        new DataItem
+        {
+            Date = ("2019-07"),
+            Revenue = 374000
+        },
+        new DataItem
+        {
+            Date = ("2019-08"),
+            Revenue = 384000
+        },
+        new DataItem
+        {
+            Date = ("2019-09"),
+            Revenue = 373000
+        },
+        new DataItem
+        {
+            Date = ("2019-10"),
+            Revenue = 382000
+        },
+        new DataItem
+        {
+            Date = ("2019-11"),
+            Revenue = 389000
+        },
+        new DataItem
+        {
+            Date = ("2019-12"),
+            Revenue = 394000
+        }
+    };
+}
