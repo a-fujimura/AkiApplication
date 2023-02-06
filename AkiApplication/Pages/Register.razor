@@ -3,6 +3,8 @@
 
 <RadzenRow>
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
+    </RadzenColumn>
+    <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
         <RadzenDropDown Data=@Years TValue="string" @bind-Value=@YearSelect AllowFiltering="true">
         </RadzenDropDown>
         年
@@ -12,6 +14,7 @@
     </RadzenColumn>
     <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
         入金
+        <RadzenButton class="w-100" Text="データ追加" Click="AddIn"></RadzenButton>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
                         PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                         TItem="TransactionDetails" Data="receipt">
@@ -26,6 +29,7 @@
 
     <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
         出金
+        <RadzenButton class="w-100" Text="データ追加" Click="AddOut"></RadzenButton>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
                         PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                         TItem="TransactionDetails" Data="disbursement">
@@ -45,4 +49,15 @@
     List<string> Months = new List<string>() { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" };
     string YearSelect = "2023";
     string MonthSelect = "1";
+
+    void AddIn()
+    {
+
+    }
+    
+    void AddOut()
+    {
+
+    }
 }
+
