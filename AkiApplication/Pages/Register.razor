@@ -58,9 +58,10 @@
         await receiptsGrid.InsertRow(orderToInsert);
     }
 
-    void AddOut()
+    async Task AddOut()
     {
-
+          var orderToInsert = new TransactionDetails();
+        await disbursementGrid.InsertRow(orderToInsert);
     }
 }
 
