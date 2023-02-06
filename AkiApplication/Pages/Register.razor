@@ -17,7 +17,7 @@
         <RadzenButton class="w-100" Text="データ追加" Click="AddIn"></RadzenButton>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
                         PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                        TItem="TransactionDetails" Data="receipt">
+                        TItem="TransactionDetails" @ref=receiptsGrid Data="receipts">
             <Columns>
                 <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付">
                 </RadzenDataGridColumn>
@@ -32,7 +32,7 @@
         <RadzenButton class="w-100" Text="データ追加" Click="AddOut"></RadzenButton>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
                         PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                        TItem="TransactionDetails" Data="disbursement">
+                        TItem="TransactionDetails" @ref=disbursementGrid Data="disbursements">
             <Columns>
                 <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付">
                 </RadzenDataGridColumn>
@@ -43,18 +43,21 @@
     </RadzenColumn>
 </RadzenRow>
 @code {
-    List<TransactionDetails> receipt = new List<TransactionDetails>();
-    List<TransactionDetails> disbursement = new List<TransactionDetails>();
+    RadzenDataGrid<TransactionDetails> receiptsGrid;
+    IList<TransactionDetails> receipts;
+    RadzenDataGrid<TransactionDetails> disbursementGrid;
+    IList<TransactionDetails> disbursements;
     List<string> Years = new List<string>() { "2023", "2022", "2021", "2020", "2019", "2018", "2017" };
     List<string> Months = new List<string>() { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" };
     string YearSelect = "2023";
     string MonthSelect = "1";
 
-    void AddIn()
+    async Task AddIn()
     {
-
+        var orderToInsert = new TransactionDetails();
+        await receiptsGrid.InsertRow(orderToInsert);
     }
-    
+
     void AddOut()
     {
 
