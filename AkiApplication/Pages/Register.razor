@@ -13,6 +13,7 @@
         </RadzenDropDown>
         月
     </RadzenColumn>
+
     <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
         入金
         <RadzenButton class="w-100" Text="データ追加" Click="AddIn"></RadzenButton>
@@ -119,7 +120,6 @@
     {
         var orderToInsert = new TransactionDetails()
             {
-                Key = receipts.Count() + 1,
                 Datetime = new DateTime(int.Parse(YearSelect), int.Parse(MonthSelect), 1),
                 Mony = 1000,
             };
@@ -132,7 +132,6 @@
     {
         var orderToInsert = new TransactionDetails()
             {
-                Key = disbursements.Count() + 1,
                 Datetime = new DateTime(int.Parse(YearSelect), int.Parse(MonthSelect), 1),
                 Mony = 1000,
             };
@@ -145,7 +144,7 @@
     {
         foreach (var i in details)
         {
-            if (i.Key == order.Key)
+            if (i == order)
             {
                 await dataGrid.EditRow(order);
             }
