@@ -17,25 +17,34 @@ namespace AkiApplication.Controllers
         {
             try
             {
-                var files = Directory.GetFiles(environment.WebRootPath + @"\receipt\" + year);
-
                 var rslt = new List<TransactionDetails>();
-                foreach (var i in files)
+                for (var i = 1; i <= 12; i++)
                 {
-                    var get = System.IO.File.ReadAllText(i);
-                    rslt.AddRange(JsonSerializer.Deserialize<List<TransactionDetails>>(get));
+                    var path = Path.Combine(environment.WebRootPath + @"\receipt", $"{year}\\{i:D2}.txt");
+                    if (System.IO.File.Exists(path))
+                    {
+                        var get = System.IO.File.ReadAllText(path);
+                        var all = JsonSerializer.Deserialize<List<TransactionDetails>>(get);
+                        var obj = new TransactionDetails()
+                        {
+                            Datetime = new DateTime(int.Parse(year), i, 1),
+                            Mony = all.Sum(x => x.Mony),
+                            Detail = TransactionDetails.Details.Receipt
+                        };
+                        rslt.Add(obj);
+                    }
+                    else
+                    {
+                        var obj = new TransactionDetails()
+                        {
+                            Datetime = new DateTime(int.Parse(year), i, 1),
+                            Mony = 0,
+                            Detail = TransactionDetails.Details.Receipt
+                        };
+                        rslt.Add(obj);
+                    }
                 }
 
-                //var path = Path.Combine(environment.WebRootPath + @"\receipt", $"{year}\\{month}.txt");
-                //if (System.IO.File.Exists(path))
-                //{
-                //    var get = System.IO.File.ReadAllText(path);
-                //    rslt = JsonSerializer.Deserialize<List<TransactionDetails>>(get);
-                //}
-                //else
-                //{
-
-                //}
                 return Content(JsonSerializer.Serialize(rslt), "application/json");
             }
             catch (Exception ex)
@@ -99,8 +108,8 @@ namespace AkiApplication.Controllers
             try
             {
                 var path = Path.Combine(environment.WebRootPath + @"\receipt", $"{year}\\{month}.txt");
-                
-                if(Directory.Exists(Path.Combine(environment.WebRootPath + @"\receipt", $"{year}")))
+
+                if (Directory.Exists(Path.Combine(environment.WebRootPath + @"\receipt", $"{year}")))
                 {
                 }
                 else

@@ -16,8 +16,8 @@
 
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
         <RadzenChart>
-            <RadzenLineSeries Interpolation="@interpolation" Data="@revenue2020" CategoryProperty="Date" Title="2019" LineType="LineType.Dashed" ValueProperty="Revenue" />
-            <RadzenColumnSeries Data="@revenue2019" CategoryProperty="Date" Title="2020" LineType="LineType.Dashed" ValueProperty="Revenue" />
+            @*<RadzenLineSeries Interpolation="@interpolation" Data="@revenue2020" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />*@
+            <RadzenColumnSeries Data="@receiptsAll" CategoryProperty="Datetime" LineType="LineType.Dashed" ValueProperty="Mony"/>
             <RadzenCategoryAxis Padding="20" Formatter="@FormatAsMonth" />
             <RadzenValueAxis Formatter="@FormatAsUSD">
                 <RadzenGridLines Visible="true" />
@@ -25,6 +25,7 @@
             </RadzenValueAxis>
         </RadzenChart>
     </RadzenColumn>
+
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
         <RadzenDropDown Data=@Months TValue="string" @bind-Value=@MonthSelect AllowFiltering="true" Change=@(args => OnMonthChange())>
         </RadzenDropDown>
@@ -108,6 +109,10 @@
     string MonthSelect = "01";
     HttpWrapper httpWrapper;
 
+    IList<TransactionDetails> receiptsAll = new List<TransactionDetails>();
+    IList<TransactionDetails> disbursementsAll = new List<TransactionDetails>();
+
+
     protected override async Task OnInitializedAsync()
     {
         httpWrapper = new HttpWrapper(ClientFactory);
@@ -116,12 +121,6 @@
 
     protected override async Task OnParametersSetAsync()
     {
-    }
-
-    class DataItem
-    {
-        public string Date { get; set; }
-        public double Revenue { get; set; }
     }
 
     string FormatAsUSD(object value)
@@ -133,137 +132,11 @@
     {
         if (value != null)
         {
-            return Convert.ToDateTime(value).ToString("MMM");
+            return Convert.ToDateTime(value).ToString("yyyy/MM");
         }
 
         return string.Empty;
     }
-
-    DataItem[] revenue2019 = new DataItem[] {
-        new DataItem
-        {
-            Date = ("2019-01"),
-            Revenue = 234000
-        },
-        new DataItem
-        {
-            Date = ("2019-02"),
-            Revenue = 269000
-        },
-        new DataItem
-        {
-            Date = ("2019-03"),
-            Revenue = 233000
-        },
-        new DataItem
-        {
-            Date = ("2019-04"),
-            Revenue = 244000
-        },
-        new DataItem
-        {
-            Date = ("2019-05"),
-            Revenue = 214000
-        },
-        new DataItem
-        {
-            Date = ("2019-06"),
-            Revenue = 253000
-        },
-        new DataItem
-        {
-            Date = ("2019-07"),
-            Revenue = 274000
-        },
-        new DataItem
-        {
-            Date = ("2019-08"),
-            Revenue = 284000
-        },
-        new DataItem
-        {
-            Date = ("2019-09"),
-            Revenue = 273000
-        },
-        new DataItem
-        {
-            Date = ("2019-10"),
-            Revenue = 282000
-        },
-        new DataItem
-        {
-            Date = ("2019-11"),
-            Revenue = 289000
-        },
-        new DataItem
-        {
-            Date = ("2019-12"),
-            Revenue = 294000
-        }
-    };
-
-    DataItem[] revenue2020 = new DataItem[] {
-        new DataItem
-        {
-            Date = ("2019-01"),
-            Revenue = 334000
-        },
-        new DataItem
-        {
-            Date = ("2019-02"),
-            Revenue = 369000
-        },
-        new DataItem
-        {
-            Date = ("2019-03"),
-            Revenue = 333000
-        },
-        new DataItem
-        {
-            Date = ("2019-04"),
-            Revenue = 344000
-        },
-        new DataItem
-        {
-            Date = ("2019-05"),
-            Revenue = 314000
-        },
-        new DataItem
-        {
-            Date = ("2019-06"),
-            Revenue = 353000
-        },
-        new DataItem
-        {
-            Date = ("2019-07"),
-            Revenue = 374000
-        },
-        new DataItem
-        {
-            Date = ("2019-08"),
-            Revenue = 384000
-        },
-        new DataItem
-        {
-            Date = ("2019-09"),
-            Revenue = 373000
-        },
-        new DataItem
-        {
-            Date = ("2019-10"),
-            Revenue = 382000
-        },
-        new DataItem
-        {
-            Date = ("2019-11"),
-            Revenue = 389000
-        },
-        new DataItem
-        {
-            Date = ("2019-12"),
-            Revenue = 394000
-        }
-    };
 
     async Task OnMonthChange()
     {
@@ -292,5 +165,8 @@
         MonthSelect = Months[0];
 
         await OnMonthChange();
+
+         var receipt = await httpWrapper.GetAsync($"https://localhost:7272/receipt/get/{YearSelect}");
+        receiptsAll = JsonSerializer.Deserialize<List<TransactionDetails>>(receipt);
     }
 }
