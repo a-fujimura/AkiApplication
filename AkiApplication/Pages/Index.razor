@@ -16,9 +16,9 @@
 
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
         <RadzenChart>
-            @*<RadzenLineSeries Interpolation="@interpolation" Data="@revenue2020" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />*@
-            <RadzenColumnSeries Data="@revenue2020" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
-            <RadzenColumnSeries Data="@revenue2021" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
+            <RadzenColumnSeries  Context="入金" Data="@revenue2020" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
+            <RadzenColumnSeries  Context="出金" Data="@revenue2021" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
+            <RadzenLineSeries Context="差額" Interpolation="@interpolation" Data="@revenue2022" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
             <RadzenColumnOptions Radius="5" Width="20" />
             <RadzenCategoryAxis Padding="20" Formatter="@FormatAsMonth" />
             <RadzenValueAxis Formatter="@FormatAsUSD">
@@ -111,9 +111,6 @@
     string MonthSelect = "01";
     HttpWrapper httpWrapper;
 
-    IList<TransactionDetails> receiptsAll = new List<TransactionDetails>();
-    IList<TransactionDetails> disbursementsAll = new List<TransactionDetails>();
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -169,35 +166,40 @@
 
         await OnMonthChange();
         {
-            var receipt = await httpWrapper.GetAsync($"https://localhost:7272/receipt/get/{YearSelect}");
-            receiptsAll = JsonSerializer.Deserialize<List<TransactionDetails>>(receipt);
+            var orgData = await httpWrapper.GetAsync($"https://localhost:7272/receipt/get/{YearSelect}");
+            var jsonData = JsonSerializer.Deserialize<List<TransactionDetails>>(orgData);
 
-            var dateitem1 = new List<DataItem>();
-            foreach (var i in receiptsAll)
+            var dateitem = new List<DataItem>();
+            foreach (var i in jsonData)
             {
-                dateitem1.Add(new DataItem() { Date = i.Datetime.ToString("yyyy-MM"), Revenue = i.Mony });
+                dateitem.Add(new DataItem() { Date = i.Datetime.ToString("yyyy-MM"), Revenue = i.Mony });
             }
-            revenue2020 = dateitem1.ToArray();
+            revenue2020 = dateitem.ToArray();
         }
         {
-            var disbursement = await httpWrapper.GetAsync($"https://localhost:7272/disbursement/get/{YearSelect}");
-            disbursementsAll = JsonSerializer.Deserialize<List<TransactionDetails>>(disbursement);
+            var orgData = await httpWrapper.GetAsync($"https://localhost:7272/disbursement/get/{YearSelect}");
+            var jsonData = JsonSerializer.Deserialize<List<TransactionDetails>>(orgData);
 
-
-
-            var dateitem2 = new List<DataItem>();
-            foreach (var i in disbursementsAll)
+            var dateitem = new List<DataItem>();
+            foreach (var i in jsonData)
             {
-                dateitem2.Add(new DataItem() { Date = i.Datetime.ToString("yyyy-MM"), Revenue = i.Mony });
+                dateitem.Add(new DataItem() { Date = i.Datetime.ToString("yyyy-MM"), Revenue = i.Mony });
             }
-            revenue2021 = dateitem2.ToArray();
+            revenue2021 = dateitem.ToArray();
         }
-
+        {
+            var dateitem = new List<DataItem>();
+            for (var i = 0; i < 12; i++)
+            {
+                dateitem.Add(new DataItem() { Date = revenue2020[i].Date, Revenue = revenue2020[i].Revenue - revenue2021[i].Revenue });
+            }
+            revenue2022 = dateitem.ToArray();
+        }
     }
 
     DataItem[] revenue2020;
     DataItem[] revenue2021;
-
+    DataItem[] revenue2022;
     class DataItem
     {
         public string Date { get; set; }
