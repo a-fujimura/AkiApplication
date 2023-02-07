@@ -111,6 +111,7 @@ namespace AkiApplication.Controllers
                 Disbursement,
             }
             public DateTime Datetime { get; set; }
+            public string Memo { get; set; }
             public Details Detail { get; set; }
             public int Mony { get; set; } = -1;
         }

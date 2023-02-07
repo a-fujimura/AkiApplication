@@ -6,17 +6,17 @@
 
 <RadzenRow>
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
-        <RadzenDropDown Data=@Years TValue="string" @bind-Value=@YearSelect AllowFiltering="true">
+        <RadzenDropDown Data=@Years TValue="string" @bind-Value=@YearSelect AllowFiltering="true" Change=@(args => OnChange())>
         </RadzenDropDown>
         年
-        <RadzenDropDown Data=@Months TValue="string" @bind-Value=@MonthSelect AllowFiltering="true">
+        <RadzenDropDown Data=@Months TValue="string" @bind-Value=@MonthSelect AllowFiltering="true" Change=@(args => OnChange())>
         </RadzenDropDown>
         月
     </RadzenColumn>
 
     <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
         入金
-        <RadzenButton class="w-100" Text="データ追加" Click="AddIn"></RadzenButton>
+        <RadzenButton class="w-100" Text="データ追加" Click="@(args => AddRow(receipts,receiptsGrid))"></RadzenButton>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
                         PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" EditMode="DataGridEditMode.Multiple"
                         ShowPagingSummary="true" TItem="TransactionDetails" @ref=receiptsGrid Data=@receipts>
@@ -29,19 +29,30 @@
                         </RadzenButton>
                     </Template>
                     <EditTemplate Context="data">
-                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveRow("0",data,receiptsGrid))">
+                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveRow(data,receiptsGrid))">
                         </RadzenButton>
                         <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Medium" Class="my-1 ms-1" Click="@(args => CancelRow(data,receiptsGrid))">
                         </RadzenButton>
                     </EditTemplate>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付">
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付" Width="180px">
+                    <Template Context="data">
+                        @String.Format("{0:d}", data.Datetime)
+                    </Template>
                     <EditTemplate Context="data">
                         <RadzenDatePicker Style="width:100%;" TValue="DateTime" ShowTime="false" @bind-Value=@data.Datetime
                                           ShowSeconds="false" HoursStep="1" MinutesStep="10" SecondsStep="0" DateFormat="yyyy/MM/dd" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="TransactionDetails" Property="Mony" Title="金額">
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Memo" Title="メモ" Sortable=false>
+                    <EditTemplate Context="data">
+                        <RadzenTextBox Style="width:100%; display: block" 　@bind-Value="data.Memo" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Mony" Title="金額" Width="150px">
+                    <Template Context="data">
+                        @String.Format("{0:C}", data.Mony)
+                    </Template>
                     <EditTemplate Context="data">
                         <RadzenNumeric Style="width:100%;" TValue="int" @bind-Value=@data.Mony />
                     </EditTemplate>
@@ -52,7 +63,7 @@
 
     <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
         出金
-        <RadzenButton class="w-100" Text="データ追加" Click="AddOut"></RadzenButton>
+        <RadzenButton class="w-100" Text="データ追加" Click="@(args => AddRow(disbursements,disbursementGrid))"></RadzenButton>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
                         PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" EditMode="DataGridEditMode.Multiple"
                         ShowPagingSummary="true" TItem="TransactionDetails" @ref=disbursementGrid Data=@disbursements>
@@ -61,21 +72,34 @@
                     <Template Context="data">
                         <RadzenButton Icon="edit" ButtonStyle=@ButtonStyle.Success Size=@ButtonSize.Medium Click="@(args => EditRow(data,disbursements,disbursementGrid))">
                         </RadzenButton>
+                        <RadzenButton Icon="delete" ButtonStyle=@ButtonStyle.Success Size=@ButtonSize.Medium Click="@(args => DeleteRow(data,disbursements,disbursementGrid))">
+                        </RadzenButton>
                     </Template>
                     <EditTemplate Context="data">
-                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveRow("1",data,disbursementGrid))">
+                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveRow(data,disbursementGrid))">
                         </RadzenButton>
                         <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Medium" Class="my-1 ms-1" Click="@(args => CancelRow(data,disbursementGrid))">
                         </RadzenButton>
                     </EditTemplate>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付">
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付" Width="180px">
+                    <Template Context="data">
+                        @String.Format("{0:d}", data.Datetime)
+                    </Template>
                     <EditTemplate Context="data">
                         <RadzenDatePicker Style="width:100%;" TValue="DateTime" ShowTime="false" @bind-Value=@data.Datetime
                                           ShowSeconds="false" HoursStep="1" MinutesStep="10" SecondsStep="0" DateFormat="yyyy/MM/dd" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="TransactionDetails" Property="Mony" Title="金額">
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Memo" Title="メモ" Sortable=false>
+                    <EditTemplate Context="data">
+                        <RadzenTextBox Style="width:100%; display: block" 　@bind-Value="data.Memo" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Mony" Title="金額" Width="150px">
+                    <Template Context="data">
+                        @String.Format("{0:C}", data.Mony)
+                    </Template>
                     <EditTemplate Context="data">
                         <RadzenNumeric Style="width:100%;" TValue="int" @bind-Value=@data.Mony />
                     </EditTemplate>
@@ -118,28 +142,16 @@
         disbursements = JsonSerializer.Deserialize<List<TransactionDetails>>(disbursement);
     }
 
-    async Task AddIn()
+    async Task AddRow(IList<TransactionDetails> details, RadzenDataGrid<TransactionDetails> dataGrid)
     {
         var orderToInsert = new TransactionDetails()
             {
                 Datetime = new DateTime(int.Parse(YearSelect), int.Parse(MonthSelect), 1),
                 Mony = 1000,
             };
-        receipts.Add(orderToInsert);
-        await receiptsGrid.Reload();
-        await receiptsGrid.LastPage();
-    }
-
-    async Task AddOut()
-    {
-        var orderToInsert = new TransactionDetails()
-            {
-                Datetime = new DateTime(int.Parse(YearSelect), int.Parse(MonthSelect), 1),
-                Mony = 1000,
-            };
-        disbursements.Add(orderToInsert);
-        await disbursementGrid.Reload();
-        await disbursementGrid.LastPage();
+        details.Add(orderToInsert);
+        await dataGrid.Reload();
+        await dataGrid.LastPage();
     }
 
     async Task EditRow(TransactionDetails order, IList<TransactionDetails> details, RadzenDataGrid<TransactionDetails> dataGrid)
@@ -161,6 +173,7 @@
     {
         details.Remove(order);
         await dataGrid.Reload();
+        await Save();
     }
 
     async Task CancelRow(TransactionDetails order, RadzenDataGrid<TransactionDetails> dataGrid)
@@ -168,23 +181,31 @@
         dataGrid.CancelEditRow(order);
     }
 
-    async Task SaveRow(string view, TransactionDetails order, RadzenDataGrid<TransactionDetails> dataGrid)
+    async Task SaveRow(TransactionDetails order, RadzenDataGrid<TransactionDetails> dataGrid)
     {
-        var content = new MultipartFormDataContent();
-        switch (view)
-        {
-            case "0":
-                content.Add(new StringContent(JsonSerializer.Serialize<List<TransactionDetails>>(receipts.ToList())), "file", "test.json");
-                var rslt1 = await httpWrapper.GetAsync($"https://localhost:7272/receipt/set/{YearSelect}/{MonthSelect}", content);
-                break;
-
-            case "1":
-                content.Add(new StringContent(JsonSerializer.Serialize<List<TransactionDetails>>(disbursements.ToList())), "file", "test.json");
-                var rslt2 = await httpWrapper.GetAsync($"https://localhost:7272/disbursement/set/{YearSelect}/{MonthSelect}", content);
-                break;
-        }
-        content.Dispose();
         await dataGrid.UpdateRow(order);
+        await Save();
+    }
+
+    public async Task Save()
+    {
+        var content1 = new MultipartFormDataContent();
+        content1.Add(new StringContent(JsonSerializer.Serialize<List<TransactionDetails>>(receipts.ToList())), "file", "test.json");
+        var rslt1 = await httpWrapper.GetAsync($"https://localhost:7272/receipt/set/{YearSelect}/{MonthSelect}", content1);
+        content1.Dispose();
+
+        var content2 = new MultipartFormDataContent();
+        content2.Add(new StringContent(JsonSerializer.Serialize<List<TransactionDetails>>(disbursements.ToList())), "file", "test.json");
+        var rslt2 = await httpWrapper.GetAsync($"https://localhost:7272/disbursement/set/{YearSelect}/{MonthSelect}", content2);
+        content2.Dispose();
+    }
+
+    async Task OnChange()
+    {
+        var receipt = await httpWrapper.GetAsync($"https://localhost:7272/receipt/get/{YearSelect}/{MonthSelect}");
+        receipts = JsonSerializer.Deserialize<List<TransactionDetails>>(receipt);
+        var disbursement = await httpWrapper.GetAsync($"https://localhost:7272/disbursement/get/{YearSelect}/{MonthSelect}");
+        disbursements = JsonSerializer.Deserialize<List<TransactionDetails>>(disbursement);
     }
 
 }
