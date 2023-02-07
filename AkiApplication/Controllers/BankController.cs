@@ -29,7 +29,6 @@ namespace AkiApplication.Controllers
                         {
                             Datetime = new DateTime(int.Parse(year), i, 1),
                             Mony = all.Sum(x => x.Mony),
-                            Detail = TransactionDetails.Details.Receipt
                         };
                         rslt.Add(obj);
                     }
@@ -39,7 +38,6 @@ namespace AkiApplication.Controllers
                         {
                             Datetime = new DateTime(int.Parse(year), i, 1),
                             Mony = 0,
-                            Detail = TransactionDetails.Details.Receipt
                         };
                         rslt.Add(obj);
                     }
@@ -94,7 +92,6 @@ namespace AkiApplication.Controllers
                         {
                             Datetime = new DateTime(int.Parse(year), i, 1),
                             Mony = all.Sum(x => x.Mony),
-                            Detail = TransactionDetails.Details.Disbursement
                         };
                         rslt.Add(obj);
                     }
@@ -104,7 +101,6 @@ namespace AkiApplication.Controllers
                         {
                             Datetime = new DateTime(int.Parse(year), i, 1),
                             Mony = 0,
-                            Detail = TransactionDetails.Details.Disbursement
                         };
                         rslt.Add(obj);
                     }
@@ -213,7 +209,6 @@ namespace AkiApplication.Controllers
             }
             public DateTime Datetime { get; set; }
             public string Memo { get; set; }
-            public Details Detail { get; set; }
             public int Mony { get; set; } = -1;
         }
     }
