@@ -17,11 +17,12 @@
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
         <RadzenChart>
             @*<RadzenLineSeries Interpolation="@interpolation" Data="@revenue2020" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />*@
-            <RadzenColumnSeries Data="@receiptsAll" CategoryProperty="Datetime" LineType="LineType.Dashed" ValueProperty="Mony"/>
+            <RadzenColumnSeries Data="@receiptsAll" CategoryProperty="Datetime" LineType="LineType.Dashed" ValueProperty="Mony" />
+            <RadzenColumnOptions Radius="5" Width="20" />
             <RadzenCategoryAxis Padding="20" Formatter="@FormatAsMonth" />
             <RadzenValueAxis Formatter="@FormatAsUSD">
                 <RadzenGridLines Visible="true" />
-                <RadzenAxisTitle Text="入出金" />
+                <RadzenAxisTitle Text="Revenue in USD" />
             </RadzenValueAxis>
         </RadzenChart>
     </RadzenColumn>
@@ -130,12 +131,13 @@
 
     string FormatAsMonth(object value)
     {
+        var rslt = string.Empty;
         if (value != null)
         {
-            return Convert.ToDateTime(value).ToString("yyyy/MM");
+            rslt = Convert.ToDateTime(value).ToString("yyyy-MM");
         }
 
-        return string.Empty;
+        return rslt;
     }
 
     async Task OnMonthChange()
@@ -166,7 +168,7 @@
 
         await OnMonthChange();
 
-         var receipt = await httpWrapper.GetAsync($"https://localhost:7272/receipt/get/{YearSelect}");
+        var receipt = await httpWrapper.GetAsync($"https://localhost:7272/receipt/get/{YearSelect}");
         receiptsAll = JsonSerializer.Deserialize<List<TransactionDetails>>(receipt);
     }
 }
