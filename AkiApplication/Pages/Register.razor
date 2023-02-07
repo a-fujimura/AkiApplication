@@ -25,9 +25,11 @@
                     <Template Context="data">
                         <RadzenButton Icon="edit" ButtonStyle=@ButtonStyle.Success Size=@ButtonSize.Medium Click="@(args => EditRow(data,receipts,receiptsGrid))">
                         </RadzenButton>
+                        <RadzenButton Icon="delete" ButtonStyle=@ButtonStyle.Success Size=@ButtonSize.Medium Click="@(args => DeleteRow(data,receipts,receiptsGrid))">
+                        </RadzenButton>
                     </Template>
                     <EditTemplate Context="data">
-                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveRow(data,receiptsGrid))">
+                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveRow("0",data,receiptsGrid))">
                         </RadzenButton>
                         <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Medium" Class="my-1 ms-1" Click="@(args => CancelRow(data,receiptsGrid))">
                         </RadzenButton>
@@ -61,7 +63,7 @@
                         </RadzenButton>
                     </Template>
                     <EditTemplate Context="data">
-                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveRow(data,disbursementGrid))">
+                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveRow("1",data,disbursementGrid))">
                         </RadzenButton>
                         <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Medium" Class="my-1 ms-1" Click="@(args => CancelRow(data,disbursementGrid))">
                         </RadzenButton>
@@ -155,15 +157,33 @@
         }
     }
 
+    async Task DeleteRow(TransactionDetails order, IList<TransactionDetails> details, RadzenDataGrid<TransactionDetails> dataGrid)
+    {
+        details.Remove(order);
+        await dataGrid.Reload();
+    }
 
     async Task CancelRow(TransactionDetails order, RadzenDataGrid<TransactionDetails> dataGrid)
     {
         dataGrid.CancelEditRow(order);
     }
 
-
-    async Task SaveRow(TransactionDetails order, RadzenDataGrid<TransactionDetails> dataGrid)
+    async Task SaveRow(string view, TransactionDetails order, RadzenDataGrid<TransactionDetails> dataGrid)
     {
+        var content = new MultipartFormDataContent();
+        switch (view)
+        {
+            case "0":
+                content.Add(new StringContent(JsonSerializer.Serialize<List<TransactionDetails>>(receipts.ToList())), "file", "test.json");
+                var rslt1 = await httpWrapper.GetAsync($"https://localhost:7272/receipt/set/{YearSelect}/{MonthSelect}", content);
+                break;
+
+            case "1":
+                content.Add(new StringContent(JsonSerializer.Serialize<List<TransactionDetails>>(disbursements.ToList())), "file", "test.json");
+                var rslt2 = await httpWrapper.GetAsync($"https://localhost:7272/disbursement/set/{YearSelect}/{MonthSelect}", content);
+                break;
+        }
+        content.Dispose();
         await dataGrid.UpdateRow(order);
     }
 
