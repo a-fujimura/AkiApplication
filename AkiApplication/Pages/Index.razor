@@ -202,7 +202,14 @@
             foreach (var i in revenue2022)
             {
                 sumVal += i.Revenue;
-                dateitem.Add(new DataItem() { Date = i.Date, Revenue = sumVal });
+                if (i.Revenue != 0)
+                {
+                    dateitem.Add(new DataItem() { Date = i.Date, Revenue = sumVal });
+                }
+                else
+                {
+                    dateitem.Add(new DataItem() { Date = i.Date, Revenue = 0 });
+                }
             }
             revenue2023 = dateitem.ToArray();
         }
