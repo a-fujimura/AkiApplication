@@ -114,32 +114,19 @@
     RadzenDataGrid<TransactionDetails> disbursementGrid;
     IList<TransactionDetails> disbursements = new List<TransactionDetails>();
     List<string> Years = new List<string>() { "2023", "2022", "2021", "2020", "2019", "2018", "2017" };
-    List<string> Months = new List<string>() { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" };
+    List<string> Months = new List<string>() { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" };
     string YearSelect = "2023";
-    string MonthSelect = "1";
+    string MonthSelect = "01";
     HttpWrapper httpWrapper;
 
     protected override async Task OnInitializedAsync()
     {
         httpWrapper = new HttpWrapper(ClientFactory);
-        var today = DateTime.Now;
-
-        Months.Clear();
-        for (var i = 0; i < today.Month; i++)
-        {
-            Months.Add((i + 1).ToString());
-        }
-
-        Months = Months.OrderByDescending(x => x).ToList();
-        MonthSelect = Months[0];
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        var receipt = await httpWrapper.GetAsync($"https://localhost:7272/receipt/get/{YearSelect}/{MonthSelect}");
-        receipts = JsonSerializer.Deserialize<List<TransactionDetails>>(receipt);
-        var disbursement = await httpWrapper.GetAsync($"https://localhost:7272/disbursement/get/{YearSelect}/{MonthSelect}");
-        disbursements = JsonSerializer.Deserialize<List<TransactionDetails>>(disbursement);
+        await OnChange();
     }
 
     async Task AddRow(IList<TransactionDetails> details, RadzenDataGrid<TransactionDetails> dataGrid)
@@ -202,11 +189,26 @@
 
     async Task OnChange()
     {
+        var today = DateTime.Now;
+        var selday = new DateTime(int.Parse(YearSelect), 1, 1);
+
+        Months.Clear();
+        for (var i = selday; i < today; i = i.AddMonths(1))
+        {
+            Months.Add((i.Month).ToString("D2"));
+            if (i.Month >= 12)
+            {
+                break;
+            }
+        }
+
+        Months = Months.OrderByDescending(x => x).ToList();
+        MonthSelect = Months[0];
+
         var receipt = await httpWrapper.GetAsync($"https://localhost:7272/receipt/get/{YearSelect}/{MonthSelect}");
         receipts = JsonSerializer.Deserialize<List<TransactionDetails>>(receipt);
         var disbursement = await httpWrapper.GetAsync($"https://localhost:7272/disbursement/get/{YearSelect}/{MonthSelect}");
         disbursements = JsonSerializer.Deserialize<List<TransactionDetails>>(disbursement);
     }
-
 }
 
