@@ -105,6 +105,7 @@ namespace AkiApplication.Controllers
 
         public class TransactionDetails
         {
+            public int Key { get; set; } = -1;
             public enum Details
             {
                 Receipt = 0,

@@ -16,12 +16,31 @@
         入金
         <RadzenButton class="w-100" Text="データ追加" Click="AddIn"></RadzenButton>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
-                        PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                        TItem="TransactionDetails" @ref=receiptsGrid Data="receipts">
+                        PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" EditMode="DataGridEditMode.Multiple"
+                        ShowPagingSummary="true" TItem="TransactionDetails" @ref=receiptsGrid Data=@receipts>
             <Columns>
+                <RadzenDataGridColumn TItem="TransactionDetails" Context="order" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="80px">
+                    <Template Context="data">
+                        <RadzenButton Icon="edit" ButtonStyle=@ButtonStyle.Success Size=@ButtonSize.Medium Click="@(args => EditReceiptRow(data))">
+                        </RadzenButton>
+                    </Template>
+                    <EditTemplate Context="data">
+                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveCleck(data))">
+                        </RadzenButton>
+                        <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Medium" Class="my-1 ms-1" Click="@(args => CancelReceipt(data))">
+                        </RadzenButton>
+                    </EditTemplate>
+                </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付">
+                    <EditTemplate Context="data">
+                        <RadzenDatePicker Style="width:100%;" TValue="DateTime" ShowTime="false" @bind-Value=@data.Datetime
+                                          ShowSeconds="false" HoursStep="1" MinutesStep="10" SecondsStep="0" DateFormat="yyyy/MM/dd" />
+                    </EditTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="TransactionDetails" Property="Mony" Title="金額">
+                    <EditTemplate Context="data">
+                        <RadzenNumeric Style="width:100%;" TValue="int" @bind-Value=@data.Mony />
+                    </EditTemplate>
                 </RadzenDataGridColumn>
             </Columns>
         </RadzenDataGrid>
@@ -31,12 +50,31 @@
         出金
         <RadzenButton class="w-100" Text="データ追加" Click="AddOut"></RadzenButton>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
-                        PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                        TItem="TransactionDetails" @ref=disbursementGrid Data="disbursements">
+                        PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" EditMode="DataGridEditMode.Multiple"
+                        ShowPagingSummary="true" TItem="TransactionDetails" @ref=disbursementGrid Data=@disbursements>
             <Columns>
+                <RadzenDataGridColumn TItem="TransactionDetails" Context="order" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="80px">
+                    <Template Context="data">
+                        <RadzenButton Icon="edit" ButtonStyle=@ButtonStyle.Success Size=@ButtonSize.Medium Click="@(args => EditDisbursementRow(data))">
+                        </RadzenButton>
+                    </Template>
+                    <EditTemplate Context="data">
+                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveCleck(data))">
+                        </RadzenButton>
+                        <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Medium" Class="my-1 ms-1" Click="@(args => CancelDisbursement(data))">
+                        </RadzenButton>
+                    </EditTemplate>
+                </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付">
+                    <EditTemplate Context="data">
+                        <RadzenDatePicker Style="width:100%;" TValue="DateTime" ShowTime="false" @bind-Value=@data.Datetime
+                                          ShowSeconds="false" HoursStep="1" MinutesStep="10" SecondsStep="0" DateFormat="yyyy/MM/dd" />
+                    </EditTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="TransactionDetails" Property="Mony" Title="金額">
+                    <EditTemplate Context="data">
+                        <RadzenNumeric Style="width:100%;" TValue="int" @bind-Value=@data.Mony />
+                    </EditTemplate>
                 </RadzenDataGridColumn>
             </Columns>
         </RadzenDataGrid>
@@ -44,24 +82,79 @@
 </RadzenRow>
 @code {
     RadzenDataGrid<TransactionDetails> receiptsGrid;
-    IList<TransactionDetails> receipts;
+    IList<TransactionDetails> receipts = new List<TransactionDetails>();
     RadzenDataGrid<TransactionDetails> disbursementGrid;
-    IList<TransactionDetails> disbursements;
+    IList<TransactionDetails> disbursements = new List<TransactionDetails>();
     List<string> Years = new List<string>() { "2023", "2022", "2021", "2020", "2019", "2018", "2017" };
     List<string> Months = new List<string>() { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" };
     string YearSelect = "2023";
     string MonthSelect = "1";
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
     async Task AddIn()
     {
-        var orderToInsert = new TransactionDetails();
-        await receiptsGrid.InsertRow(orderToInsert);
+        var orderToInsert = new TransactionDetails() { Key = receipts.Count() + 1 };
+        receipts.Add(orderToInsert);
+        await receiptsGrid.Reload();
+        await receiptsGrid.LastPage();
     }
 
     async Task AddOut()
     {
-          var orderToInsert = new TransactionDetails();
-        await disbursementGrid.InsertRow(orderToInsert);
+        var orderToInsert = new TransactionDetails() { Key = disbursements.Count() + 1 };
+        disbursements.Add(orderToInsert);
+        await disbursementGrid.Reload();
+        await disbursementGrid.LastPage();
+    }
+
+    async Task EditReceiptRow(TransactionDetails order)
+    {
+        foreach (var i in receipts)
+        {
+            if (i.Key == order.Key)
+            {
+                await receiptsGrid.EditRow(order);
+            }
+            else
+            {
+                receiptsGrid.CancelEditRow(i);
+            }
+        }
+    }
+
+    async Task EditDisbursementRow(TransactionDetails order)
+    {
+        foreach (var i in disbursements)
+        {
+            if (i.Key == order.Key)
+            {
+                await disbursementGrid.EditRow(order);
+            }
+            else
+            {
+                disbursementGrid.CancelEditRow(i);
+            }
+        }
+    }
+
+
+    async Task CancelReceipt(TransactionDetails order)
+    {
+        receiptsGrid.CancelEditRow(order);
+    }
+
+    async Task CancelDisbursement(TransactionDetails order)
+    {
+        disbursementGrid.CancelEditRow(order);
+    }
+
+    async Task SaveCleck(TransactionDetails order)
+    {
+
     }
 }
 
