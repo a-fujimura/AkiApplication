@@ -12,13 +12,45 @@ namespace AkiApplication.Controllers
             this.environment = environment;
         }
 
+        [Route("receipt/get/{year}")]
+        public async Task<IActionResult> GetCashReceipt(string year)
+        {
+            try
+            {
+                var files = Directory.GetFiles(environment.WebRootPath + @"\receipt\" + year);
+
+                var rslt = new List<TransactionDetails>();
+                foreach (var i in files)
+                {
+                    var get = System.IO.File.ReadAllText(i);
+                    rslt.AddRange(JsonSerializer.Deserialize<List<TransactionDetails>>(get));
+                }
+
+                //var path = Path.Combine(environment.WebRootPath + @"\receipt", $"{year}\\{month}.txt");
+                //if (System.IO.File.Exists(path))
+                //{
+                //    var get = System.IO.File.ReadAllText(path);
+                //    rslt = JsonSerializer.Deserialize<List<TransactionDetails>>(get);
+                //}
+                //else
+                //{
+
+                //}
+                return Content(JsonSerializer.Serialize(rslt), "application/json");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [Route("receipt/get/{year}/{month}")]
         public async Task<IActionResult> GetCashReceipt(string year, string month)
         {
             try
             {
                 var rslt = new List<TransactionDetails>();
-                var path = Path.Combine(environment.WebRootPath + @"\receipt", $"{year}-{month}.txt");
+                var path = Path.Combine(environment.WebRootPath + @"\receipt", $"{year}\\{month}.txt");
                 if (System.IO.File.Exists(path))
                 {
                     var get = System.IO.File.ReadAllText(path);
@@ -36,13 +68,14 @@ namespace AkiApplication.Controllers
             }
         }
 
+
         [Route("disbursement/get/{year}/{month}")]
         public async Task<IActionResult> GetCashDisbursement(string year, string month)
         {
             try
             {
                 var rslt = new List<TransactionDetails>();
-                var path = Path.Combine(environment.WebRootPath + @"\disbursement", $"{year}-{month}.txt");
+                var path = Path.Combine(environment.WebRootPath + @"\disbursement", $"{year}\\{month}.txt");
                 if (System.IO.File.Exists(path))
                 {
                     var get = System.IO.File.ReadAllText(path);
@@ -65,7 +98,7 @@ namespace AkiApplication.Controllers
         {
             try
             {
-                var path = Path.Combine(environment.WebRootPath + @"\receipt", $"{year}-{month}.txt");
+                var path = Path.Combine(environment.WebRootPath + @"\receipt", $"{year}\\{month}.txt");
                 using (var memoryStream = new MemoryStream())
                 {
                     await file.CopyToAsync(memoryStream);
@@ -86,7 +119,7 @@ namespace AkiApplication.Controllers
         {
             try
             {
-                var path = Path.Combine(environment.WebRootPath + @"\disbursement", $"{year}-{month}.txt");
+                var path = Path.Combine(environment.WebRootPath + @"\disbursement", $"{year}\\{month}.txt");
                 using (var memoryStream = new MemoryStream())
                 {
                     await file.CopyToAsync(memoryStream);
@@ -102,6 +135,8 @@ namespace AkiApplication.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+
 
         public class TransactionDetails
         {
