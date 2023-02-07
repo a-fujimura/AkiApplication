@@ -99,6 +99,15 @@ namespace AkiApplication.Controllers
             try
             {
                 var path = Path.Combine(environment.WebRootPath + @"\receipt", $"{year}\\{month}.txt");
+                
+                if(Directory.Exists(Path.Combine(environment.WebRootPath + @"\receipt", $"{year}")))
+                {
+                }
+                else
+                {
+                    Directory.CreateDirectory(Path.Combine(environment.WebRootPath + @"\receipt", $"{year}"));
+                }
+
                 using (var memoryStream = new MemoryStream())
                 {
                     await file.CopyToAsync(memoryStream);
@@ -120,6 +129,16 @@ namespace AkiApplication.Controllers
             try
             {
                 var path = Path.Combine(environment.WebRootPath + @"\disbursement", $"{year}\\{month}.txt");
+
+
+                if (Directory.Exists(Path.Combine(environment.WebRootPath + @"\disbursement", $"{year}")))
+                {
+                }
+                else
+                {
+                    Directory.CreateDirectory(Path.Combine(environment.WebRootPath + @"\disbursement", $"{year}"));
+                }
+
                 using (var memoryStream = new MemoryStream())
                 {
                     await file.CopyToAsync(memoryStream);
