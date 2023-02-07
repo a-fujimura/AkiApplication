@@ -1,9 +1,10 @@
 ﻿@page "/register"
+@using LubricantApp.Data.Models
+@using System.Text.Json
 @using static AkiApplication.Controllers.BankController
+@inject IHttpClientFactory ClientFactory
 
 <RadzenRow>
-    <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
-    </RadzenColumn>
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
         <RadzenDropDown Data=@Years TValue="string" @bind-Value=@YearSelect AllowFiltering="true">
         </RadzenDropDown>
@@ -89,10 +90,29 @@
     List<string> Months = new List<string>() { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" };
     string YearSelect = "2023";
     string MonthSelect = "1";
+    HttpWrapper httpWrapper;
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
+        httpWrapper = new HttpWrapper(ClientFactory);
+        var today = DateTime.Now;
+
+        Months.Clear();
+        for (var i = 0; i < today.Month; i++)
+        {
+            Months.Add((i + 1).ToString());
+        }
+
+        Months = Months.OrderByDescending(x => x).ToList();
+        MonthSelect = Months[0];
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var receipt = await httpWrapper.GetAsync($"https://localhost:7272/receipt/get/{YearSelect}/{MonthSelect}");
+        receipts = JsonSerializer.Deserialize<List<TransactionDetails>>(receipt);
+        var disbursement = await httpWrapper.GetAsync($"https://localhost:7272/disbursement/get/{YearSelect}/{MonthSelect}");
+        disbursements = JsonSerializer.Deserialize<List<TransactionDetails>>(disbursement);
     }
 
     async Task AddIn()
@@ -100,7 +120,8 @@
         var orderToInsert = new TransactionDetails()
             {
                 Key = receipts.Count() + 1,
-                Datetime = DateTime.Now
+                Datetime = new DateTime(int.Parse(YearSelect), int.Parse(MonthSelect), 1),
+                Mony = 1000,
             };
         receipts.Add(orderToInsert);
         await receiptsGrid.Reload();
@@ -112,7 +133,8 @@
         var orderToInsert = new TransactionDetails()
             {
                 Key = disbursements.Count() + 1,
-                Datetime = DateTime.Now
+                Datetime = new DateTime(int.Parse(YearSelect), int.Parse(MonthSelect), 1),
+                Mony = 1000,
             };
         disbursements.Add(orderToInsert);
         await disbursementGrid.Reload();
