@@ -130,7 +130,6 @@ namespace AkiApplication.Controllers
             {
                 var path = Path.Combine(environment.WebRootPath + @"\disbursement", $"{year}\\{month}.txt");
 
-
                 if (Directory.Exists(Path.Combine(environment.WebRootPath + @"\disbursement", $"{year}")))
                 {
                 }

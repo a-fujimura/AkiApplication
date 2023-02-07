@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using System.Globalization
 @using LubricantApp.Data.Models
+@using System.Text.Json
 @using static AkiApplication.Controllers.BankController
 @inject IHttpClientFactory ClientFactory
 
@@ -8,7 +9,7 @@
 
 <RadzenRow>
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
-        <RadzenDropDown Data=@Years TValue="string" @bind-Value=@YearSelect AllowFiltering="true">
+        <RadzenDropDown Data=@Years TValue="string" @bind-Value=@YearSelect AllowFiltering="true" Change=@(args => OnYearChange())>
         </RadzenDropDown>
         年
     </RadzenColumn>
@@ -25,19 +26,37 @@
         </RadzenChart>
     </RadzenColumn>
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
-        <RadzenDropDown Data=@Months TValue="string" @bind-Value=@MonthSelect AllowFiltering="true">
+        <RadzenDropDown Data=@Months TValue="string" @bind-Value=@MonthSelect AllowFiltering="true" Change=@(args => OnMonthChange())>
         </RadzenDropDown>
         月
     </RadzenColumn>
     <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
         入金
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
-                        PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                        TItem="TransactionDetails" Data="receipt">
+                        PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" EditMode="DataGridEditMode.Multiple"
+                        ShowPagingSummary="true" TItem="TransactionDetails" @ref=receiptsGrid Data=@receipts>
             <Columns>
-                <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付">
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付" Width="180px">
+                    <Template Context="data">
+                        @String.Format("{0:d}", data.Datetime)
+                    </Template>
+                    <EditTemplate Context="data">
+                        <RadzenDatePicker Style="width:100%;" TValue="DateTime" ShowTime="false" @bind-Value=@data.Datetime
+                                          ShowSeconds="false" HoursStep="1" MinutesStep="10" SecondsStep="0" DateFormat="yyyy/MM/dd" />
+                    </EditTemplate>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="TransactionDetails" Property="Mony" Title="金額">
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Memo" Title="メモ" Sortable=false>
+                    <EditTemplate Context="data">
+                        <RadzenTextBox Style="width:100%; display: block" 　@bind-Value="data.Memo" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Mony" Title="金額" Width="150px">
+                    <Template Context="data">
+                        @String.Format("{0:C}", data.Mony)
+                    </Template>
+                    <EditTemplate Context="data">
+                        <RadzenNumeric Style="width:100%;" TValue="int" @bind-Value=@data.Mony />
+                    </EditTemplate>
                 </RadzenDataGridColumn>
             </Columns>
         </RadzenDataGrid>
@@ -46,12 +65,30 @@
     <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
         出金
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
-                        PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                        TItem="TransactionDetails" Data="disbursement">
+                        PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" EditMode="DataGridEditMode.Multiple"
+                        ShowPagingSummary="true" TItem="TransactionDetails" @ref=disbursementGrid Data=@disbursements>
             <Columns>
-                <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付">
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付" Width="180px">
+                    <Template Context="data">
+                        @String.Format("{0:d}", data.Datetime)
+                    </Template>
+                    <EditTemplate Context="data">
+                        <RadzenDatePicker Style="width:100%;" TValue="DateTime" ShowTime="false" @bind-Value=@data.Datetime
+                                          ShowSeconds="false" HoursStep="1" MinutesStep="10" SecondsStep="0" DateFormat="yyyy/MM/dd" />
+                    </EditTemplate>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="TransactionDetails" Property="Mony" Title="金額">
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Memo" Title="メモ" Sortable=false>
+                    <EditTemplate Context="data">
+                        <RadzenTextBox Style="width:100%; display: block" 　@bind-Value="data.Memo" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="TransactionDetails" Property="Mony" Title="金額" Width="150px">
+                    <Template Context="data">
+                        @String.Format("{0:C}", data.Mony)
+                    </Template>
+                    <EditTemplate Context="data">
+                        <RadzenNumeric Style="width:100%;" TValue="int" @bind-Value=@data.Mony />
+                    </EditTemplate>
                 </RadzenDataGridColumn>
             </Columns>
         </RadzenDataGrid>
@@ -61,23 +98,24 @@
 
 @code {
     Interpolation interpolation = Interpolation.Line;
-    List<TransactionDetails> receipt = new List<TransactionDetails>();
-    List<TransactionDetails> disbursement = new List<TransactionDetails>();
+    RadzenDataGrid<TransactionDetails> receiptsGrid;
+    IList<TransactionDetails> receipts = new List<TransactionDetails>();
+    RadzenDataGrid<TransactionDetails> disbursementGrid;
+    IList<TransactionDetails> disbursements = new List<TransactionDetails>();
     List<string> Years = new List<string>() { "2023", "2022", "2021", "2020", "2019", "2018", "2017" };
-    List<string> Months = new List<string>() { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" };
+    List<string> Months = new List<string>() { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" };
     string YearSelect = "2023";
-    string MonthSelect = "1";
+    string MonthSelect = "01";
     HttpWrapper httpWrapper;
 
     protected override async Task OnInitializedAsync()
     {
         httpWrapper = new HttpWrapper(ClientFactory);
+        await OnYearChange();
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        receipt.Add(new TransactionDetails());
-        await Task.Delay(100);
     }
 
     class DataItem
@@ -226,4 +264,33 @@
             Revenue = 394000
         }
     };
+
+    async Task OnMonthChange()
+    {
+        var receipt = await httpWrapper.GetAsync($"https://localhost:7272/receipt/get/{YearSelect}/{MonthSelect}");
+        receipts = JsonSerializer.Deserialize<List<TransactionDetails>>(receipt);
+        var disbursement = await httpWrapper.GetAsync($"https://localhost:7272/disbursement/get/{YearSelect}/{MonthSelect}");
+        disbursements = JsonSerializer.Deserialize<List<TransactionDetails>>(disbursement);
+    }
+
+    async Task OnYearChange()
+    {
+        var today = DateTime.Now;
+        var selday = new DateTime(int.Parse(YearSelect), 1, 1);
+
+        Months.Clear();
+        for (var i = selday; i < today; i = i.AddMonths(1))
+        {
+            Months.Add((i.Month).ToString("D2"));
+            if (i.Month >= 12)
+            {
+                break;
+            }
+        }
+
+        Months = Months.OrderByDescending(x => x).ToList();
+        MonthSelect = Months[0];
+
+        await OnMonthChange();
+    }
 }
