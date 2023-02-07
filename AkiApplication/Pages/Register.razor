@@ -6,10 +6,10 @@
 
 <RadzenRow>
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
-        <RadzenDropDown Data=@Years TValue="string" @bind-Value=@YearSelect AllowFiltering="true" Change=@(args => OnChange())>
+        <RadzenDropDown Data=@Years TValue="string" @bind-Value=@YearSelect AllowFiltering="true" Change=@(args => OnYearChange())>
         </RadzenDropDown>
         年
-        <RadzenDropDown Data=@Months TValue="string" @bind-Value=@MonthSelect AllowFiltering="true" Change=@(args => OnChange())>
+        <RadzenDropDown Data=@Months TValue="string" @bind-Value=@MonthSelect AllowFiltering="true" Change=@(args => OnMonthChange())>
         </RadzenDropDown>
         月
     </RadzenColumn>
@@ -122,8 +122,7 @@
     protected override async Task OnInitializedAsync()
     {
         httpWrapper = new HttpWrapper(ClientFactory);
-        await OnChange();
-        MonthSelect = Months[0];
+        await OnYearChange();
     }
 
     protected override async Task OnParametersSetAsync()
@@ -188,7 +187,15 @@
         content2.Dispose();
     }
 
-    async Task OnChange()
+    async Task OnMonthChange()
+    {
+        var receipt = await httpWrapper.GetAsync($"https://localhost:7272/receipt/get/{YearSelect}/{MonthSelect}");
+        receipts = JsonSerializer.Deserialize<List<TransactionDetails>>(receipt);
+        var disbursement = await httpWrapper.GetAsync($"https://localhost:7272/disbursement/get/{YearSelect}/{MonthSelect}");
+        disbursements = JsonSerializer.Deserialize<List<TransactionDetails>>(disbursement);
+    }
+
+    async Task OnYearChange()
     {
         var today = DateTime.Now;
         var selday = new DateTime(int.Parse(YearSelect), 1, 1);
@@ -204,11 +211,9 @@
         }
 
         Months = Months.OrderByDescending(x => x).ToList();
+        MonthSelect = Months[0];
 
-        var receipt = await httpWrapper.GetAsync($"https://localhost:7272/receipt/get/{YearSelect}/{MonthSelect}");
-        receipts = JsonSerializer.Deserialize<List<TransactionDetails>>(receipt);
-        var disbursement = await httpWrapper.GetAsync($"https://localhost:7272/disbursement/get/{YearSelect}/{MonthSelect}");
-        disbursements = JsonSerializer.Deserialize<List<TransactionDetails>>(disbursement);
+        await OnMonthChange();
     }
 }
 
