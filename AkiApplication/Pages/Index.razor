@@ -15,12 +15,14 @@
     </RadzenColumn>
 
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
-        <RadzenLabel Text="平均:"></RadzenLabel>
-        <RadzenTextBox @bind-Value=@ReceiptVal></RadzenTextBox>
+        <RadzenLabel Text="入金平均:"></RadzenLabel>
+        <RadzenTextBox @bind-Value=@ReceiptAve></RadzenTextBox>
         <RadzenLabel Text="入金合計:"></RadzenLabel>
-        <RadzenTextBox @bind-Value=@DisbursementVal></RadzenTextBox>
-        <RadzenLabel Text="出勤合計:"></RadzenLabel>
-        <RadzenTextBox @bind-Value=@AverageVal></RadzenTextBox>
+        <RadzenTextBox @bind-Value=@ReceiptSum></RadzenTextBox>
+        <RadzenLabel Text="出金平均:"></RadzenLabel>
+        <RadzenTextBox @bind-Value=@DisbursementAve></RadzenTextBox>
+        <RadzenLabel Text="出金合計:"></RadzenLabel>
+        <RadzenTextBox @bind-Value=@DisbursementSum></RadzenTextBox>
     </RadzenColumn>
 
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
@@ -33,7 +35,7 @@
             <RadzenCategoryAxis Padding="20" Formatter="@FormatAsMonth" />
             <RadzenValueAxis Formatter="@FormatAsUSD">
                 <RadzenGridLines Visible="true" />
-                <RadzenAxisTitle Text="Revenue in USD" />
+                <RadzenAxisTitle Text="入出金" />
             </RadzenValueAxis>
         </RadzenChart>
     </RadzenColumn>
@@ -121,9 +123,10 @@
     string MonthSelect = "01";
     HttpWrapper httpWrapper;
 
-    string ReceiptVal = string.Empty;
-    string DisbursementVal = string.Empty;
-    string AverageVal = string.Empty;
+    string ReceiptSum = string.Empty;
+    string DisbursementSum = string.Empty;
+    string ReceiptAve = string.Empty;
+    string DisbursementAve = string.Empty;
 
 
 
@@ -190,6 +193,8 @@
                 dateitem.Add(new DataItem() { Date = i.Datetime.ToString("yyyy-MM"), Revenue = i.Mony });
             }
             revenue2020 = dateitem.ToArray();
+            ReceiptSum = String.Format("{0:C}", dateitem.Sum(x => x.Revenue));
+            ReceiptAve = String.Format("{0:C}", dateitem.Where(x => x.Revenue != 0).Average(x => x.Revenue));
         }
         {
             var orgData = await httpWrapper.GetAsync($"https://localhost:7272/disbursement/get/{YearSelect}");
@@ -201,6 +206,8 @@
                 dateitem.Add(new DataItem() { Date = i.Datetime.ToString("yyyy-MM"), Revenue = i.Mony });
             }
             revenue2021 = dateitem.ToArray();
+            DisbursementSum = String.Format("{0:C}", dateitem.Sum(x => x.Revenue));
+            DisbursementAve = String.Format("{0:C}", dateitem.Where(x => x.Revenue != 0).Average(x => x.Revenue));
         }
         {
             var dateitem = new List<DataItem>();
