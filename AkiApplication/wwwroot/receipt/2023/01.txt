@@ -1,1 +1,1 @@
-[{"Datetime":"2023-01-15T00:00:00","Memo":null,"Detail":0,"Mony":178350},{"Datetime":"2023-01-01T00:00:00","Memo":"\u9810\u91D1","Detail":0,"Mony":121556}]
+[{"Datetime":"2023-01-15T00:00:00","Memo":null,"Detail":0,"Mony":178350}]
