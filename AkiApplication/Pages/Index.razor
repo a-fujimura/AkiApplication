@@ -18,6 +18,7 @@
         <RadzenChart>
             @*<RadzenLineSeries Interpolation="@interpolation" Data="@revenue2020" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />*@
             <RadzenColumnSeries Data="@revenue2020" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
+            <RadzenColumnSeries Data="@revenue2021" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
             <RadzenColumnOptions Radius="5" Width="20" />
             <RadzenCategoryAxis Padding="20" Formatter="@FormatAsMonth" />
             <RadzenValueAxis Formatter="@FormatAsUSD">
@@ -167,19 +168,35 @@
         MonthSelect = Months[0];
 
         await OnMonthChange();
-
-        var receipt = await httpWrapper.GetAsync($"https://localhost:7272/receipt/get/{YearSelect}");
-        receiptsAll = JsonSerializer.Deserialize<List<TransactionDetails>>(receipt);
-
-        var dateitem = new List<DataItem>();
-        foreach (var i in receiptsAll)
         {
-            dateitem.Add(new DataItem() { Date = i.Datetime.ToString("yyyy-MM"), Revenue = i.Mony });
+            var receipt = await httpWrapper.GetAsync($"https://localhost:7272/receipt/get/{YearSelect}");
+            receiptsAll = JsonSerializer.Deserialize<List<TransactionDetails>>(receipt);
+
+            var dateitem1 = new List<DataItem>();
+            foreach (var i in receiptsAll)
+            {
+                dateitem1.Add(new DataItem() { Date = i.Datetime.ToString("yyyy-MM"), Revenue = i.Mony });
+            }
+            revenue2020 = dateitem1.ToArray();
         }
-        revenue2020 = dateitem.ToArray();
+        {
+            var disbursement = await httpWrapper.GetAsync($"https://localhost:7272/disbursement/get/{YearSelect}");
+            disbursementsAll = JsonSerializer.Deserialize<List<TransactionDetails>>(disbursement);
+
+
+
+            var dateitem2 = new List<DataItem>();
+            foreach (var i in disbursementsAll)
+            {
+                dateitem2.Add(new DataItem() { Date = i.Datetime.ToString("yyyy-MM"), Revenue = i.Mony });
+            }
+            revenue2021 = dateitem2.ToArray();
+        }
+
     }
 
     DataItem[] revenue2020;
+    DataItem[] revenue2021;
 
     class DataItem
     {

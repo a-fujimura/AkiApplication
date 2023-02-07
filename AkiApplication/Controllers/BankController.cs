@@ -77,7 +77,46 @@ namespace AkiApplication.Controllers
             }
         }
 
+        [Route("disbursement/get/{year}")]
+        public async Task<IActionResult> GetCashDisbursement(string year)
+        {
+            try
+            {
+                var rslt = new List<TransactionDetails>();
+                for (var i = 1; i <= 12; i++)
+                {
+                    var path = Path.Combine(environment.WebRootPath + @"\disbursement", $"{year}\\{i:D2}.txt");
+                    if (System.IO.File.Exists(path))
+                    {
+                        var get = System.IO.File.ReadAllText(path);
+                        var all = JsonSerializer.Deserialize<List<TransactionDetails>>(get);
+                        var obj = new TransactionDetails()
+                        {
+                            Datetime = new DateTime(int.Parse(year), i, 1),
+                            Mony = all.Sum(x => x.Mony),
+                            Detail = TransactionDetails.Details.Disbursement
+                        };
+                        rslt.Add(obj);
+                    }
+                    else
+                    {
+                        var obj = new TransactionDetails()
+                        {
+                            Datetime = new DateTime(int.Parse(year), i, 1),
+                            Mony = 0,
+                            Detail = TransactionDetails.Details.Disbursement
+                        };
+                        rslt.Add(obj);
+                    }
+                }
 
+                return Content(JsonSerializer.Serialize(rslt), "application/json");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
         [Route("disbursement/get/{year}/{month}")]
         public async Task<IActionResult> GetCashDisbursement(string year, string month)
         {

@@ -1,1 +1,1 @@
-[{"Datetime":"2022-09-15T00:00:00","Mony":187090,"Memo":null,"Detail":0}]
+[{"Datetime":"2022-09-15T00:00:00","Memo":null,"Detail":0,"Mony":187090}]
