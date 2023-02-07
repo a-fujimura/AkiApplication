@@ -72,7 +72,7 @@
                     <Template Context="data">
                         <RadzenButton Icon="edit" ButtonStyle=@ButtonStyle.Success Size=@ButtonSize.Medium Click="@(args => EditRow(data,disbursements,disbursementGrid))">
                         </RadzenButton>
-                        <RadzenButton Icon="delete" ButtonStyle=@ButtonStyle.Success Size=@ButtonSize.Medium Click="@(args => DeleteRow(data,disbursements,disbursementGrid))">
+                        <RadzenButton Icon="delete" ButtonStyle=@ButtonStyle.Danger Size=@ButtonSize.Medium Click="@(args => DeleteRow(data,disbursements,disbursementGrid))">
                         </RadzenButton>
                     </Template>
                     <EditTemplate Context="data">
@@ -122,11 +122,12 @@
     protected override async Task OnInitializedAsync()
     {
         httpWrapper = new HttpWrapper(ClientFactory);
+        await OnChange();
+        MonthSelect = Months[0];
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        await OnChange();
     }
 
     async Task AddRow(IList<TransactionDetails> details, RadzenDataGrid<TransactionDetails> dataGrid)
@@ -203,7 +204,6 @@
         }
 
         Months = Months.OrderByDescending(x => x).ToList();
-        MonthSelect = Months[0];
 
         var receipt = await httpWrapper.GetAsync($"https://localhost:7272/receipt/get/{YearSelect}/{MonthSelect}");
         receipts = JsonSerializer.Deserialize<List<TransactionDetails>>(receipt);

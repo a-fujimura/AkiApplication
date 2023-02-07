@@ -10,9 +10,4 @@
     <PackageReference Include="Radzen.Blazor" Version="4.6.5" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\disbursement\" />
-    <Folder Include="wwwroot\receipt\" />
-  </ItemGroup>
-
 </Project>
