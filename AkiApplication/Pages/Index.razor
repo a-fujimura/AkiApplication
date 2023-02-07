@@ -15,11 +15,20 @@
     </RadzenColumn>
 
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
+        <RadzenLabel Text="平均:"></RadzenLabel>
+        <RadzenTextBox @bind-Value=@ReceiptVal></RadzenTextBox>
+        <RadzenLabel Text="入金合計:"></RadzenLabel>
+        <RadzenTextBox @bind-Value=@DisbursementVal></RadzenTextBox>
+        <RadzenLabel Text="出勤合計:"></RadzenLabel>
+        <RadzenTextBox @bind-Value=@AverageVal></RadzenTextBox>
+    </RadzenColumn>
+
+    <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
         <RadzenChart>
             <RadzenColumnSeries Title="入金" Data="@revenue2020" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
             <RadzenColumnSeries Title="出金" Data="@revenue2021" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
+            <RadzenColumnSeries Title="差額" Data="@revenue2022" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
             <RadzenColumnSeries Title="積立" Data="@revenue2023" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
-            <RadzenLineSeries Title="差額" Interpolation="@interpolation" Data="@revenue2022" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
             <RadzenColumnOptions Radius="5" Width="20" />
             <RadzenCategoryAxis Padding="20" Formatter="@FormatAsMonth" />
             <RadzenValueAxis Formatter="@FormatAsUSD">
@@ -111,6 +120,11 @@
     string YearSelect = "2023";
     string MonthSelect = "01";
     HttpWrapper httpWrapper;
+
+    string ReceiptVal = string.Empty;
+    string DisbursementVal = string.Empty;
+    string AverageVal = string.Empty;
+
 
 
     protected override async Task OnInitializedAsync()
