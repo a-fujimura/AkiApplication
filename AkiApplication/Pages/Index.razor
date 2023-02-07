@@ -16,9 +16,10 @@
 
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
         <RadzenChart>
-            <RadzenColumnSeries  Context="入金" Data="@revenue2020" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
-            <RadzenColumnSeries  Context="出金" Data="@revenue2021" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
-            <RadzenLineSeries Context="差額" Interpolation="@interpolation" Data="@revenue2022" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
+            <RadzenColumnSeries Title="入金" Data="@revenue2020" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
+            <RadzenColumnSeries Title="出金" Data="@revenue2021" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
+            <RadzenColumnSeries Title="積立" Data="@revenue2023" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
+            <RadzenLineSeries Title="差額" Interpolation="@interpolation" Data="@revenue2022" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
             <RadzenColumnOptions Radius="5" Width="20" />
             <RadzenCategoryAxis Padding="20" Formatter="@FormatAsMonth" />
             <RadzenValueAxis Formatter="@FormatAsUSD">
@@ -195,14 +196,26 @@
             }
             revenue2022 = dateitem.ToArray();
         }
+        {
+            var dateitem = new List<DataItem>();
+            var sumVal = 0;
+            foreach (var i in revenue2022)
+            {
+                sumVal += i.Revenue;
+                dateitem.Add(new DataItem() { Date = i.Date, Revenue = sumVal });
+            }
+            revenue2023 = dateitem.ToArray();
+        }
     }
 
     DataItem[] revenue2020;
     DataItem[] revenue2021;
     DataItem[] revenue2022;
+    DataItem[] revenue2023;
+
     class DataItem
     {
         public string Date { get; set; }
-        public double Revenue { get; set; }
+        public int Revenue { get; set; }
     }
 }
