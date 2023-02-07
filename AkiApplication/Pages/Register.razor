@@ -19,15 +19,15 @@
                         PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" EditMode="DataGridEditMode.Multiple"
                         ShowPagingSummary="true" TItem="TransactionDetails" @ref=receiptsGrid Data=@receipts>
             <Columns>
-                <RadzenDataGridColumn TItem="TransactionDetails" Context="order" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="80px">
+                <RadzenDataGridColumn TItem="TransactionDetails" Context="order" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
                     <Template Context="data">
-                        <RadzenButton Icon="edit" ButtonStyle=@ButtonStyle.Success Size=@ButtonSize.Medium Click="@(args => EditReceiptRow(data))">
+                        <RadzenButton Icon="edit" ButtonStyle=@ButtonStyle.Success Size=@ButtonSize.Medium Click="@(args => EditRow(data,receipts,receiptsGrid))">
                         </RadzenButton>
                     </Template>
                     <EditTemplate Context="data">
-                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveCleck(data))">
+                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveRow(data,receiptsGrid))">
                         </RadzenButton>
-                        <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Medium" Class="my-1 ms-1" Click="@(args => CancelReceipt(data))">
+                        <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Medium" Class="my-1 ms-1" Click="@(args => CancelRow(data,receiptsGrid))">
                         </RadzenButton>
                     </EditTemplate>
                 </RadzenDataGridColumn>
@@ -53,15 +53,15 @@
                         PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" EditMode="DataGridEditMode.Multiple"
                         ShowPagingSummary="true" TItem="TransactionDetails" @ref=disbursementGrid Data=@disbursements>
             <Columns>
-                <RadzenDataGridColumn TItem="TransactionDetails" Context="order" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="80px">
+                <RadzenDataGridColumn TItem="TransactionDetails" Context="order" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
                     <Template Context="data">
-                        <RadzenButton Icon="edit" ButtonStyle=@ButtonStyle.Success Size=@ButtonSize.Medium Click="@(args => EditDisbursementRow(data))">
+                        <RadzenButton Icon="edit" ButtonStyle=@ButtonStyle.Success Size=@ButtonSize.Medium Click="@(args => EditRow(data,disbursements,disbursementGrid))">
                         </RadzenButton>
                     </Template>
                     <EditTemplate Context="data">
-                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveCleck(data))">
+                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveRow(data,disbursementGrid))">
                         </RadzenButton>
-                        <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Medium" Class="my-1 ms-1" Click="@(args => CancelDisbursement(data))">
+                        <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Medium" Class="my-1 ms-1" Click="@(args => CancelRow(data,disbursementGrid))">
                         </RadzenButton>
                     </EditTemplate>
                 </RadzenDataGridColumn>
@@ -97,7 +97,11 @@
 
     async Task AddIn()
     {
-        var orderToInsert = new TransactionDetails() { Key = receipts.Count() + 1 };
+        var orderToInsert = new TransactionDetails()
+            {
+                Key = receipts.Count() + 1,
+                Datetime = DateTime.Now
+            };
         receipts.Add(orderToInsert);
         await receiptsGrid.Reload();
         await receiptsGrid.LastPage();
@@ -105,54 +109,44 @@
 
     async Task AddOut()
     {
-        var orderToInsert = new TransactionDetails() { Key = disbursements.Count() + 1 };
+        var orderToInsert = new TransactionDetails()
+            {
+                Key = disbursements.Count() + 1,
+                Datetime = DateTime.Now
+            };
         disbursements.Add(orderToInsert);
         await disbursementGrid.Reload();
         await disbursementGrid.LastPage();
     }
 
-    async Task EditReceiptRow(TransactionDetails order)
+    async Task EditRow(TransactionDetails order, IList<TransactionDetails> details, RadzenDataGrid<TransactionDetails> dataGrid)
     {
-        foreach (var i in receipts)
+        foreach (var i in details)
         {
             if (i.Key == order.Key)
             {
-                await receiptsGrid.EditRow(order);
+                await dataGrid.EditRow(order);
             }
             else
             {
-                receiptsGrid.CancelEditRow(i);
-            }
-        }
-    }
-
-    async Task EditDisbursementRow(TransactionDetails order)
-    {
-        foreach (var i in disbursements)
-        {
-            if (i.Key == order.Key)
-            {
-                await disbursementGrid.EditRow(order);
-            }
-            else
-            {
-                disbursementGrid.CancelEditRow(i);
+                dataGrid.CancelEditRow(i);
             }
         }
     }
 
 
-    async Task CancelReceipt(TransactionDetails order)
+    async Task CancelRow(TransactionDetails order, RadzenDataGrid<TransactionDetails> dataGrid)
     {
-        receiptsGrid.CancelEditRow(order);
+        dataGrid.CancelEditRow(order);
     }
 
-    async Task CancelDisbursement(TransactionDetails order)
+
+    async Task SaveRow(TransactionDetails order, RadzenDataGrid<TransactionDetails> dataGrid)
     {
-        disbursementGrid.CancelEditRow(order);
+        await dataGrid.UpdateRow(order);
     }
 
-    async Task SaveCleck(TransactionDetails order)
+    async Task SaveDisbursement(TransactionDetails order)
     {
 
     }
