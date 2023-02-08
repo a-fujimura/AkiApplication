@@ -1,0 +1,23 @@
+﻿@page "/schedule"
+@using LubricantApp.Data.Models
+@using System.Text.Json
+@using static AkiApplication.Controllers.BankController
+@inject IHttpClientFactory ClientFactory
+
+<RadzenRow>
+    <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
+
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
+    HttpWrapper httpWrapper;
+    protected override async Task OnInitializedAsync()
+    {
+        httpWrapper = new HttpWrapper(ClientFactory);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+    }
+}
