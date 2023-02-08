@@ -7,7 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Radzen.Blazor" Version="4.6.5" />
+    <PackageReference Include="Radzen.Blazor" Version="4.6.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\schedule\" />
   </ItemGroup>
 
 </Project>
