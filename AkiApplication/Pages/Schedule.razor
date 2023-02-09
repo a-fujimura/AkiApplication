@@ -133,7 +133,6 @@
         httpWrapper = new HttpWrapper(ClientFactory);
     }
 
-
     async Task AddRow(IList<TransactionDetails> details, RadzenDataGrid<TransactionDetails> dataGrid)
     {
         var orderToInsert = new TransactionDetails()
@@ -175,7 +174,8 @@
     async Task SaveRow(TransactionDetails order, RadzenDataGrid<TransactionDetails> dataGrid)
     {
         await dataGrid.UpdateRow(order);
-
+        revenue[0].Revenue = receipts.Sum(x => x.Mony);
+        revenue[1].Revenue = disbursements.Sum(x => x.Mony);
     }
 
 

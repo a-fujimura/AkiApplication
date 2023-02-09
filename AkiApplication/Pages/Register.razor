@@ -166,6 +166,7 @@
     async Task CancelRow(TransactionDetails order, RadzenDataGrid<TransactionDetails> dataGrid)
     {
         dataGrid.CancelEditRow(order);
+        await OnMonthChange();
     }
 
     async Task SaveRow(TransactionDetails order, RadzenDataGrid<TransactionDetails> dataGrid)
