@@ -7,7 +7,7 @@
 <RadzenRow>
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
         <RadzenChart>
-            <RadzenPieSeries Title="入金" Data=@revenue CategoryProperty="Date" ValueProperty="Revenue">
+            <RadzenPieSeries Title="" Data=@revenue CategoryProperty="Date" ValueProperty="Revenue">
             </RadzenPieSeries>
         </RadzenChart>
     </RadzenColumn>
@@ -101,15 +101,14 @@
     DataItem[] revenue = new DataItem[] {
         new DataItem
         {
-            Date = "入金",
+            Date = "出金",
             Revenue = 0
         },
         new DataItem
         {
-            Date = "出金",
+            Date = "入金",
             Revenue = 0
         },
-
     };
 
     protected override async Task OnInitializedAsync()
@@ -169,8 +168,8 @@
         await dataGrid.UpdateRow(order);
         receipts = receipts.OrderByDescending(x => x.Mony).ToList();
         disbursements = disbursements.OrderByDescending(x => x.Mony).ToList();
-        revenue[0].Revenue = receipts.Sum(x => x.Mony);
-        revenue[1].Revenue = disbursements.Sum(x => x.Mony);
+        revenue[1].Revenue = receipts.Sum(x => x.Mony);
+        revenue[0].Revenue = disbursements.Sum(x => x.Mony);
         await Save();
     }
 
