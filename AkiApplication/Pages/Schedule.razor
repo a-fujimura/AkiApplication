@@ -11,9 +11,22 @@
             </RadzenPieSeries>
         </RadzenChart>
     </RadzenColumn>
+    <RadzenColumn Size="4" Class="rz-text-align-center rz-border-info-light">
+        <RadzenLabel Text="入金合計:"></RadzenLabel>
+        <RadzenTextBox @bind-Value=@ReceiptSum></RadzenTextBox>
+    </RadzenColumn>
 
+    <RadzenColumn Size="4" Class="rz-text-align-center rz-border-info-light">
+        <RadzenLabel Text="出金合計:"></RadzenLabel>
+        <RadzenTextBox @bind-Value=@DisbursementSum></RadzenTextBox>
+    </RadzenColumn>
 
-    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light" >
+    <RadzenColumn Size="4" Class="rz-text-align-center rz-border-info-light">
+        <RadzenLabel Text="差額合計:"></RadzenLabel>
+        <RadzenTextBox @bind-Value=@DifferenceSum></RadzenTextBox>
+    </RadzenColumn>
+
+    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
         入金
         <RadzenButton class="w-100" Text="データ追加" Click="@(args => AddRow(receipts,receiptsGrid))"></RadzenButton>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
@@ -52,7 +65,7 @@
         </RadzenDataGrid>
     </RadzenColumn>
 
-    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light" >
+    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
         出金
         <RadzenButton class="w-100" Text="データ追加" Click="@(args => AddRow(disbursements,disbursementGrid))"></RadzenButton>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
@@ -98,6 +111,11 @@
     IList<TransactionDetails> receipts = new List<TransactionDetails>();
     RadzenDataGrid<TransactionDetails> disbursementGrid;
     IList<TransactionDetails> disbursements = new List<TransactionDetails>();
+
+    string ReceiptSum = string.Empty;
+    string DisbursementSum = string.Empty;
+    string DifferenceSum = string.Empty;
+
     DataItem[] revenue = new DataItem[] {
         new DataItem
         {
@@ -124,6 +142,10 @@
         disbursements = JsonSerializer.Deserialize<List<TransactionDetails>>(disbursement);
         revenue[1].Revenue = receipts.Sum(x => x.Mony);
         revenue[0].Revenue = disbursements.Sum(x => x.Mony);
+
+        ReceiptSum = String.Format("{0:C}", receipts.Sum(x => x.Mony));
+        DisbursementSum = String.Format("{0:C}", disbursements.Sum(x => x.Mony));
+        DifferenceSum = String.Format("{0:C}", receipts.Sum(x => x.Mony) - disbursements.Sum(x => x.Mony));
     }
 
     async Task AddRow(IList<TransactionDetails> details, RadzenDataGrid<TransactionDetails> dataGrid)
@@ -185,6 +207,10 @@
         content2.Add(new StringContent(JsonSerializer.Serialize<List<TransactionDetails>>(disbursements.ToList())), "file", "test.json");
         var rslt2 = await httpWrapper.GetAsync($"https://localhost:7272/schedule/set/disbursement", content2);
         content2.Dispose();
+
+        ReceiptSum = String.Format("{0:C}", receipts.Sum(x => x.Mony));
+        DisbursementSum = String.Format("{0:C}", disbursements.Sum(x => x.Mony));
+        DifferenceSum = String.Format("{0:C}", receipts.Sum(x => x.Mony) - disbursements.Sum(x => x.Mony));
     }
 
     class DataItem
