@@ -13,11 +13,11 @@
     </RadzenColumn>
 
 
-    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light" Style="height:500px; overflow-x: hidden; overflow-y: scroll;">
+    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light" >
         入金
         <RadzenButton class="w-100" Text="データ追加" Click="@(args => AddRow(receipts,receiptsGrid))"></RadzenButton>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
-                        PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" EditMode="DataGridEditMode.Multiple"
+                        PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" EditMode="DataGridEditMode.Multiple"
                         ShowPagingSummary="true" TItem="TransactionDetails" @ref=receiptsGrid Data=@receipts>
             <Columns>
                 <RadzenDataGridColumn TItem="TransactionDetails" Context="order" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
@@ -52,11 +52,11 @@
         </RadzenDataGrid>
     </RadzenColumn>
 
-    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light" Style="height:500px; overflow-x: hidden; overflow-y: scroll;">
+    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light" >
         出金
         <RadzenButton class="w-100" Text="データ追加" Click="@(args => AddRow(disbursements,disbursementGrid))"></RadzenButton>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
-                        PageSize="15" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" EditMode="DataGridEditMode.Multiple"
+                        PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" EditMode="DataGridEditMode.Multiple"
                         ShowPagingSummary="true" TItem="TransactionDetails" @ref=disbursementGrid Data=@disbursements>
             <Columns>
                 <RadzenDataGridColumn TItem="TransactionDetails" Context="order" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
