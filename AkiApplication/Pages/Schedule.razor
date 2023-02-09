@@ -5,9 +5,19 @@
 @inject IHttpClientFactory ClientFactory
 
 <RadzenRow>
-    <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
+    <RadzenColumn Size="4" Class="rz-text-align-center rz-border-info-light">
+        <RadzenChart>
+            <RadzenPieSeries Title="" Data=@revenueIn CategoryProperty="Date" ValueProperty="Revenue">
+            </RadzenPieSeries>
+        </RadzenChart>
+    </RadzenColumn><RadzenColumn Size="4" Class="rz-text-align-center rz-border-info-light">
         <RadzenChart>
             <RadzenPieSeries Title="" Data=@revenue CategoryProperty="Date" ValueProperty="Revenue">
+            </RadzenPieSeries>
+        </RadzenChart>
+    </RadzenColumn><RadzenColumn Size="4" Class="rz-text-align-center rz-border-info-light">
+        <RadzenChart>
+            <RadzenPieSeries Title="" Data=@revenueOut CategoryProperty="Date" ValueProperty="Revenue">
             </RadzenPieSeries>
         </RadzenChart>
     </RadzenColumn>
@@ -129,6 +139,10 @@
         },
     };
 
+    List<DataItem> revenueIn = new List<DataItem>();
+
+    List<DataItem> revenueOut = new List<DataItem>();
+
     protected override async Task OnInitializedAsync()
     {
         httpWrapper = new HttpWrapper(ClientFactory);
@@ -146,6 +160,24 @@
         ReceiptSum = String.Format("{0:C}", receipts.Sum(x => x.Mony));
         DisbursementSum = String.Format("{0:C}", disbursements.Sum(x => x.Mony));
         DifferenceSum = String.Format("{0:C}", receipts.Sum(x => x.Mony) - disbursements.Sum(x => x.Mony));
+
+        revenueIn.Clear();
+        foreach (var i in receipts)
+        {
+            if (i.Mony != 0)
+            {
+                revenueIn.Add(new DataItem() { Date = i.Memo, Revenue = i.Mony });
+            }
+        }
+
+        revenueOut.Clear();
+        foreach (var i in disbursements)
+        {
+            if (i.Mony != 0)
+            {
+                revenueOut.Add(new DataItem() { Date = i.Memo, Revenue = i.Mony });
+            }
+        }
     }
 
     async Task AddRow(IList<TransactionDetails> details, RadzenDataGrid<TransactionDetails> dataGrid)
@@ -193,6 +225,8 @@
         disbursements = disbursements.OrderByDescending(x => x.Mony).ToList();
         revenue[1].Revenue = receipts.Sum(x => x.Mony);
         revenue[0].Revenue = disbursements.Sum(x => x.Mony);
+
+
         await Save();
     }
 
@@ -211,6 +245,18 @@
         ReceiptSum = String.Format("{0:C}", receipts.Sum(x => x.Mony));
         DisbursementSum = String.Format("{0:C}", disbursements.Sum(x => x.Mony));
         DifferenceSum = String.Format("{0:C}", receipts.Sum(x => x.Mony) - disbursements.Sum(x => x.Mony));
+
+        revenueIn.Clear();
+        foreach (var i in receipts)
+        {
+            revenueIn.Add(new DataItem() { Date = i.Memo, Revenue = i.Mony });
+        }
+
+        revenueOut.Clear();
+        foreach (var i in disbursements)
+        {
+            revenueOut.Add(new DataItem() { Date = i.Memo, Revenue = i.Mony });
+        }
     }
 
     class DataItem
