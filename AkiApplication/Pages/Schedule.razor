@@ -6,7 +6,10 @@
 
 <RadzenRow>
     <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
-
+        <RadzenChart>
+            <RadzenPieSeries Title="入金" Data=@revenue CategoryProperty="Date" ValueProperty="Revenue">
+            </RadzenPieSeries>
+        </RadzenChart>
     </RadzenColumn>
 
 
@@ -25,9 +28,9 @@
                         </RadzenButton>
                     </Template>
                     <EditTemplate Context="data">
-                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveRow(data,receiptsGrid))">
+                        <RadzenButton Icon="check" ButtonStyle=@ButtonStyle.Success Size=@ButtonSize.Medium Click="@(args => SaveRow(data,receiptsGrid))">
                         </RadzenButton>
-                        <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Medium" Class="my-1 ms-1" Click="@(args => CancelRow(data,receiptsGrid))">
+                        <RadzenButton Icon="close" ButtonStyle=@ButtonStyle.Light Size=@ButtonSize.Medium Click="@(args => CancelRow(data,receiptsGrid))">
                         </RadzenButton>
                     </EditTemplate>
                 </RadzenDataGridColumn>
@@ -72,9 +75,9 @@
                         </RadzenButton>
                     </Template>
                     <EditTemplate Context="data">
-                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Medium" Click="@(args => SaveRow(data,disbursementGrid))">
+                        <RadzenButton Icon="check" ButtonStyle=@ButtonStyle.Success Size=@ButtonSize.Medium Click="@(args => SaveRow(data,disbursementGrid))">
                         </RadzenButton>
-                        <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Medium" Class="my-1 ms-1" Click="@(args => CancelRow(data,disbursementGrid))">
+                        <RadzenButton Icon="close" ButtonStyle=@ButtonStyle.Light Size=@ButtonSize.Medium Click="@(args => CancelRow(data,disbursementGrid))">
                         </RadzenButton>
                     </EditTemplate>
                 </RadzenDataGridColumn>
@@ -111,7 +114,19 @@
     IList<TransactionDetails> receipts = new List<TransactionDetails>();
     RadzenDataGrid<TransactionDetails> disbursementGrid;
     IList<TransactionDetails> disbursements = new List<TransactionDetails>();
+    DataItem[] revenue = new DataItem[] {
+        new DataItem
+        {
+            Date = "入金",
+            Revenue = 0
+        },
+        new DataItem
+        {
+            Date = "出金",
+            Revenue = 0
+        },
 
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -160,13 +175,13 @@
     async Task SaveRow(TransactionDetails order, RadzenDataGrid<TransactionDetails> dataGrid)
     {
         await dataGrid.UpdateRow(order);
-     
+
     }
 
 
     class DataItem
     {
-        public string Quarter { get; set; }
+        public string Date { get; set; }
         public double Revenue { get; set; }
     }
 }
