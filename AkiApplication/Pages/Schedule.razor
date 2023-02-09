@@ -34,7 +34,7 @@
                         </RadzenButton>
                     </EditTemplate>
                 </RadzenDataGridColumn>
-           
+
                 <RadzenDataGridColumn TItem="TransactionDetails" Property="Memo" Title="メモ" Sortable=false>
                     <EditTemplate Context="data">
                         <RadzenTextBox Style="width:100%; display: block" 　@bind-Value="data.Memo" />
@@ -117,6 +117,15 @@
         httpWrapper = new HttpWrapper(ClientFactory);
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        var receipt = await httpWrapper.GetAsync($"https://localhost:7272/schedule/get/receipt");
+        receipts = JsonSerializer.Deserialize<List<TransactionDetails>>(receipt);
+        var disbursement = await httpWrapper.GetAsync($"https://localhost:7272/schedule/get/disbursement");
+        disbursements = JsonSerializer.Deserialize<List<TransactionDetails>>(disbursement);
+
+    }
+
     async Task AddRow(IList<TransactionDetails> details, RadzenDataGrid<TransactionDetails> dataGrid)
     {
         var orderToInsert = new TransactionDetails()
@@ -162,8 +171,21 @@
         disbursements = disbursements.OrderByDescending(x => x.Mony).ToList();
         revenue[0].Revenue = receipts.Sum(x => x.Mony);
         revenue[1].Revenue = disbursements.Sum(x => x.Mony);
+        await Save();
     }
 
+    public async Task Save()
+    {
+        var content1 = new MultipartFormDataContent();
+        content1.Add(new StringContent(JsonSerializer.Serialize<List<TransactionDetails>>(receipts.ToList())), "file", "test.json");
+        var rslt1 = await httpWrapper.GetAsync($"https://localhost:7272/schedule/set/receipt", content1);
+        content1.Dispose();
+
+        var content2 = new MultipartFormDataContent();
+        content2.Add(new StringContent(JsonSerializer.Serialize<List<TransactionDetails>>(disbursements.ToList())), "file", "test.json");
+        var rslt2 = await httpWrapper.GetAsync($"https://localhost:7272/schedule/set/disbursement", content2);
+        content2.Dispose();
+    }
 
     class DataItem
     {

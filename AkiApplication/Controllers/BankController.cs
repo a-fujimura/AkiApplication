@@ -13,7 +13,7 @@ namespace AkiApplication.Controllers
         }
 
         [Route("receipt/get/{year}")]
-        public async Task<IActionResult> GetCashReceipt(string year)
+        public async Task<IActionResult> GetReceipt(string year)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace AkiApplication.Controllers
         }
 
         [Route("receipt/get/{year}/{month}")]
-        public async Task<IActionResult> GetCashReceipt(string year, string month)
+        public async Task<IActionResult> GetReceipt(string year, string month)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace AkiApplication.Controllers
         }
 
         [Route("disbursement/get/{year}")]
-        public async Task<IActionResult> GetCashDisbursement(string year)
+        public async Task<IActionResult> GetDisbursement(string year)
         {
             try
             {
@@ -114,7 +114,7 @@ namespace AkiApplication.Controllers
             }
         }
         [Route("disbursement/get/{year}/{month}")]
-        public async Task<IActionResult> GetCashDisbursement(string year, string month)
+        public async Task<IActionResult> GetDisbursement(string year, string month)
         {
             try
             {
@@ -138,7 +138,7 @@ namespace AkiApplication.Controllers
         }
 
         [Route("receipt/set/{year}/{month}")]
-        public async Task<IActionResult> SetCashReceipt(string year, string month, IFormFile file)
+        public async Task<IActionResult> SetReceipt(string year, string month, IFormFile file)
         {
             try
             {
@@ -168,7 +168,7 @@ namespace AkiApplication.Controllers
         }
 
         [Route("disbursement/set/{year}/{month}")]
-        public async Task<IActionResult> SetCashDisbursement(string year, string month, IFormFile file)
+        public async Task<IActionResult> SetDisbursement(string year, string month, IFormFile file)
         {
             try
             {
@@ -198,7 +198,60 @@ namespace AkiApplication.Controllers
             }
         }
 
+        [Route("schedule/get/{mode}")]
+        public async Task<IActionResult> GetSchedule(string mode)
+        {
+            try
+            {
+                var rslt = new List<TransactionDetails>();
+                var path = Path.Combine(environment.WebRootPath + @"\schedule", $"{mode}.txt");
+                if (System.IO.File.Exists(path))
+                {
+                    var get = System.IO.File.ReadAllText(path);
+                    rslt = JsonSerializer.Deserialize<List<TransactionDetails>>(get);
+                }
+                else
+                {
 
+                }
+                return Content(JsonSerializer.Serialize(rslt), "application/json");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [Route("schedule/set/{mode}")]
+        public async Task<IActionResult> SetSchedule(string mode, IFormFile file)
+        {
+            try
+            {
+                var path = Path.Combine(environment.WebRootPath + @"\schedule", $"{mode}.txt");
+
+                if (Directory.Exists(Path.Combine(environment.WebRootPath + @"\schedule", $"{mode}.txt")))
+                {
+                }
+                else
+                {
+                    Directory.CreateDirectory(Path.Combine(environment.WebRootPath, $"schedule"));
+                }
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    await file.CopyToAsync(memoryStream);
+                    var get = JsonSerializer.Deserialize<List<TransactionDetails>>(Encoding.UTF8.GetString(memoryStream.ToArray()));
+
+                    System.IO.File.WriteAllText(path, JsonSerializer.Serialize(get));
+
+                }
+                return StatusCode(200);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
         public class TransactionDetails
         {
