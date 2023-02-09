@@ -13,7 +13,7 @@
     </RadzenColumn>
 
 
-    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
+    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light" Style="height:550px; overflow-x: hidden; overflow-y: scroll;">
         入金
         <RadzenButton class="w-100" Text="データ追加" Click="@(args => AddRow(receipts,receiptsGrid))"></RadzenButton>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
@@ -52,7 +52,7 @@
         </RadzenDataGrid>
     </RadzenColumn>
 
-    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
+    <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light" Style="height:550px; overflow-x: hidden; overflow-y: scroll;">
         出金
         <RadzenButton class="w-100" Text="データ追加" Click="@(args => AddRow(disbursements,disbursementGrid))"></RadzenButton>
         <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
