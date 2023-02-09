@@ -34,15 +34,7 @@
                         </RadzenButton>
                     </EditTemplate>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付" Width="180px">
-                    <Template Context="data">
-                        @String.Format("{0:d}", data.Datetime)
-                    </Template>
-                    <EditTemplate Context="data">
-                        <RadzenDatePicker Style="width:100%;" TValue="DateTime" ShowTime="false" @bind-Value=@data.Datetime
-                                          ShowSeconds="false" HoursStep="1" MinutesStep="10" SecondsStep="0" DateFormat="yyyy/MM/dd" />
-                    </EditTemplate>
-                </RadzenDataGridColumn>
+           
                 <RadzenDataGridColumn TItem="TransactionDetails" Property="Memo" Title="メモ" Sortable=false>
                     <EditTemplate Context="data">
                         <RadzenTextBox Style="width:100%; display: block" 　@bind-Value="data.Memo" />
@@ -81,15 +73,7 @@
                         </RadzenButton>
                     </EditTemplate>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="TransactionDetails" Property="Datetime" Title="日付" Width="180px">
-                    <Template Context="data">
-                        @String.Format("{0:d}", data.Datetime)
-                    </Template>
-                    <EditTemplate Context="data">
-                        <RadzenDatePicker Style="width:100%;" TValue="DateTime" ShowTime="false" @bind-Value=@data.Datetime
-                                          ShowSeconds="false" HoursStep="1" MinutesStep="10" SecondsStep="0" DateFormat="yyyy/MM/dd" />
-                    </EditTemplate>
-                </RadzenDataGridColumn>
+
                 <RadzenDataGridColumn TItem="TransactionDetails" Property="Memo" Title="メモ" Sortable=false>
                     <EditTemplate Context="data">
                         <RadzenTextBox Style="width:100%; display: block" 　@bind-Value="data.Memo" />
@@ -174,6 +158,8 @@
     async Task SaveRow(TransactionDetails order, RadzenDataGrid<TransactionDetails> dataGrid)
     {
         await dataGrid.UpdateRow(order);
+        receipts = receipts.OrderByDescending(x => x.Mony).ToList();
+        disbursements = disbursements.OrderByDescending(x => x.Mony).ToList();
         revenue[0].Revenue = receipts.Sum(x => x.Mony);
         revenue[1].Revenue = disbursements.Sum(x => x.Mony);
     }
