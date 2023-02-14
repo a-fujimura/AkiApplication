@@ -202,7 +202,7 @@
         var selday = new DateTime(int.Parse(YearSelect), 1, 1);
 
         Months.Clear();
-        for (var i = selday; i < today; i = i.AddMonths(1))
+        for (var i = selday; i < today.AddMonths(1); i = i.AddMonths(1))
         {
             Months.Add((i.Month).ToString("D2"));
             if (i.Month >= 12)
