@@ -1,19 +1,38 @@
-﻿@inherits LayoutComponentBase
+﻿@inherits AkiApplication.Layouts.MainLayoutComponent
 
-<PageTitle>AkiApplication</PageTitle>
+@inject IHttpClientFactory ClientFactory
+@using Radzen
+@using Radzen.Blazor
+@using System.Text.Json
+<RadzenDialog />
+<RadzenNotification />
+<RadzenTooltip />
+<RadzenContextMenu />
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<RadzenLayout>
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+            <RadzenSidebarToggle Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
+            <RadzenLabel Text="Header" />
+        </RadzenStack>
+    </RadzenHeader>
+    <RadzenSidebar @bind-Expanded="@sidebar1Expanded">
+        <RadzenPanelMenu>
+            <RadzenPanelMenuItem Icon="home" Text="集計" Path="home">
+            </RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Icon="home" Text="予定" Path="schedule">
+            </RadzenPanelMenuItem>
+     
+        </RadzenPanelMenu>
+    </RadzenSidebar>
+    <RadzenBody>
+        @Body
+    </RadzenBody>
+    @*  <RadzenFooter>
+    Footer
+    </RadzenFooter>*@
+</RadzenLayout>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+@code {
+    bool sidebar1Expanded = true;
+}

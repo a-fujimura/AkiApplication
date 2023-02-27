@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace LubricantApp.Data.Models
+namespace AkiApplication.Data.Models
 {
     public static class PathWrapper
     {
