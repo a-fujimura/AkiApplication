@@ -11,26 +11,23 @@
         <RadzenDropDown Data=@Years TValue="string" @bind-Value=@YearSelect AllowFiltering="true" Change=@(args => OnYearChange())>
         </RadzenDropDown>
         年
+        <RadzenDropDown Data=@Months TValue="string" @bind-Value=@MonthSelect AllowFiltering="true" Change=@(args => OnMonthChange())>
+        </RadzenDropDown>
+        月
     </RadzenColumn>
 
-    <RadzenColumn Size="3" Class="rz-text-align-center rz-border-info-light">
-        <RadzenLabel Text="入金平均:"></RadzenLabel>
-        <RadzenTextBox @bind-Value=@ReceiptAve></RadzenTextBox>
-    </RadzenColumn>
-    <RadzenColumn Size="3" Class="rz-text-align-center rz-border-info-light">
-        <RadzenLabel Text="入金合計:"></RadzenLabel>
-        <RadzenTextBox @bind-Value=@ReceiptSum></RadzenTextBox>
-    </RadzenColumn>
-    <RadzenColumn Size="3" Class="rz-text-align-center rz-border-info-light">
-        <RadzenLabel Text="出金平均:"></RadzenLabel>
-        <RadzenTextBox @bind-Value=@DisbursementAve></RadzenTextBox>
-    </RadzenColumn>
-    <RadzenColumn Size="3" Class="rz-text-align-center rz-border-info-light">
-        <RadzenLabel Text="出金合計:"></RadzenLabel>
-        <RadzenTextBox @bind-Value=@DisbursementSum></RadzenTextBox>
+    <RadzenColumn Size="2" Class="rz-text-align-center rz-border-info-light">
+        入金平均:
+        <RadzenTextBox class="w-100" Style="text-align:center;" @bind-Value=@ReceiptAve></RadzenTextBox>
+        入金合計:
+        <RadzenTextBox class="w-100" Style="text-align:center;" @bind-Value=@ReceiptSum></RadzenTextBox>
+        出金平均:
+        <RadzenTextBox class="w-100" Style="text-align:center;" @bind-Value=@DisbursementAve></RadzenTextBox>
+        出金合計:
+        <RadzenTextBox class="w-100" Style="text-align:center;" @bind-Value=@DisbursementSum></RadzenTextBox>
     </RadzenColumn>
 
-    <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
+    <RadzenColumn Size="10" Class="rz-text-align-center rz-border-info-light">
         <RadzenChart>
             <RadzenColumnSeries Title="入金" Data="@revenue2020" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
             <RadzenColumnSeries Title="出金" Data="@revenue2021" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
@@ -45,11 +42,6 @@
         </RadzenChart>
     </RadzenColumn>
 
-    <RadzenColumn Size="12" Class="rz-text-align-center rz-border-info-light">
-        <RadzenDropDown Data=@Months TValue="string" @bind-Value=@MonthSelect AllowFiltering="true" Change=@(args => OnMonthChange())>
-        </RadzenDropDown>
-        月
-    </RadzenColumn>
     <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
         入金
         <RadzenButton class="w-100" Text="データ追加" Click="@(args => AddRow(receipts,receiptsGrid))"></RadzenButton>
