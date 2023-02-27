@@ -1,0 +1,13 @@
+﻿@page "/future"
+@using Radzen;
+@using Radzen.Blazor;
+
+<RadzenScheduler @ref=@scheduler style="height: 768px;" TItem="AppointmentData" StartProperty="Start" EndProperty="End"
+                 TextProperty="Text" SelectedIndex="1">
+    <RadzenMonthView />
+    <RadzenYearPlannerView />
+    <RadzenYearTimelineView />
+</RadzenScheduler>
+@code {
+    RadzenScheduler<AppointmentData>? scheduler;
+}
