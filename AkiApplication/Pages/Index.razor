@@ -16,17 +16,6 @@
         月
     </RadzenColumn>
 
-    <RadzenColumn Size="2" Class="rz-text-align-center rz-border-info-light">
-        入金平均:
-        <RadzenTextBox class="w-100" Style="text-align:center;" @bind-Value=@ReceiptAve></RadzenTextBox>
-        入金合計:
-        <RadzenTextBox class="w-100" Style="text-align:center;" @bind-Value=@ReceiptSum></RadzenTextBox>
-        出金平均:
-        <RadzenTextBox class="w-100" Style="text-align:center;" @bind-Value=@DisbursementAve></RadzenTextBox>
-        出金合計:
-        <RadzenTextBox class="w-100" Style="text-align:center;" @bind-Value=@DisbursementSum></RadzenTextBox>
-    </RadzenColumn>
-
     <RadzenColumn Size="10" Class="rz-text-align-center rz-border-info-light">
         <RadzenChart>
             <RadzenColumnSeries Title="入金" Data="@revenue2020" CategoryProperty="Date" LineType="LineType.Dashed" ValueProperty="Revenue" />
@@ -40,6 +29,17 @@
                 <RadzenAxisTitle Text="入出金" />
             </RadzenValueAxis>
         </RadzenChart>
+    </RadzenColumn>
+
+    <RadzenColumn Size="2" Class="rz-text-align-center rz-border-info-light">
+        入金平均:
+        <RadzenTextBox class="w-100" Style="text-align:center;" @bind-Value=@ReceiptAve></RadzenTextBox>
+        入金合計:
+        <RadzenTextBox class="w-100" Style="text-align:center;" @bind-Value=@ReceiptSum></RadzenTextBox>
+        出金平均:
+        <RadzenTextBox class="w-100" Style="text-align:center;" @bind-Value=@DisbursementAve></RadzenTextBox>
+        出金合計:
+        <RadzenTextBox class="w-100" Style="text-align:center;" @bind-Value=@DisbursementSum></RadzenTextBox>
     </RadzenColumn>
 
     <RadzenColumn Size="6" Class="rz-text-align-center rz-border-info-light">
