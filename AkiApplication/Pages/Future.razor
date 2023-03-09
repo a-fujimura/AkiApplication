@@ -2,12 +2,84 @@
 @using Radzen;
 @using Radzen.Blazor;
 
-<RadzenScheduler @ref=@scheduler style="height: 768px;" TItem="AppointmentData" StartProperty="Start" EndProperty="End"
-                 TextProperty="Text" SelectedIndex="1">
+@using Radzen;
+@using Radzen.Blazor;
+@inject DialogService DialogService
+@inject NotificationService NotificationService
+@inject MasterService MasterService
+@inject ReserveService ReserveService
+@using LubricantApp.Data
+
+<RadzenScheduler @ref=@scheduler SlotRender=@OnSlotRender AppointmentRender=@OnAppointmentRender
+                 style="height: 768px;" TItem="AppointmentData" StartProperty="Start" EndProperty="End"
+                 TextProperty="Text" SelectedIndex="0" Data=@apDatas>
     <RadzenMonthView />
     <RadzenYearPlannerView />
     <RadzenYearTimelineView />
 </RadzenScheduler>
 @code {
     RadzenScheduler<AppointmentData>? scheduler;
+    IList<AppointmentData> apDatas { get; set; } = new List<AppointmentData>();
+    IList<string> backcolors = new List<string>() { "#f6a278", "#f16744", "#c73618", "#004a59", "#027184", "#0193a5", "#000000", "#000000", "#000000" };
+    IList<string> fontcolors = new List<string>() { "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#000000", "#000000", "#000000" };
+    IList<DateTime> dateTimes = new List<DateTime>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        apDatas.Clear();
+        var startDate = new DateTime(2023, 4, 1);
+        await Task.Factory.StartNew(() =>
+        {
+            while (!(startDate.Year == 2024 && startDate.Month == 4))
+            {
+                if (startDate.Date.DayOfWeek == DayOfWeek.Saturday || startDate.Date.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    apDatas.Add(new AppointmentData()
+                        {
+                            Start = startDate.Date,
+                            End = startDate.Date,
+                            Text = "会社休日",
+                            Data = "test"
+                        });
+                }
+
+                startDate = startDate.AddDays(1);
+            }
+            apDatas.Add(new AppointmentData()
+                {
+                    Start = new DateTime(2023, 5, 1),
+                    End = new DateTime(2023, 5, 2),
+                    Text = "会社休日",
+                    Data = "test"
+                });
+            apDatas.Add(new AppointmentData()
+                {
+                    Start = new DateTime(2023, 5, 1),
+                    End = new DateTime(2023, 5, 2),
+                    Text = "会社休日",
+                    Data = "test"
+                });
+            apDatas.Add(new AppointmentData()
+                {
+                    Start = new DateTime(2023, 5, 1),
+                    End = new DateTime(2023, 5, 2),
+                    Text = "会社休日",
+                    Data = "test"
+                });
+        });
+
+    }
+
+    void OnSlotRender(SchedulerSlotRenderEventArgs args)
+    {
+
+    }
+
+    void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<AppointmentData>
+    args)
+    {
+        args.Attributes["style"] = $"color: {fontcolors[0]};background-color: {backcolors[0]}; margin: 0px 0px 0px 0px;";
+
+    }
+
 }
