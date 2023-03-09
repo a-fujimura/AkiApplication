@@ -2,19 +2,12 @@
 @using Radzen;
 @using Radzen.Blazor;
 
-@using Radzen;
-@using Radzen.Blazor;
-@inject DialogService DialogService
-@inject NotificationService NotificationService
-@inject MasterService MasterService
-@inject ReserveService ReserveService
-@using LubricantApp.Data
-
 <RadzenScheduler @ref=@scheduler SlotRender=@OnSlotRender AppointmentRender=@OnAppointmentRender
-                 style="height: 768px;" TItem="AppointmentData" StartProperty="Start" EndProperty="End"
+                 style="height:800px;" TItem="AppointmentData" StartProperty="Start" EndProperty="End"
                  TextProperty="Text" SelectedIndex="0" Data=@apDatas>
     <RadzenMonthView />
     <RadzenYearPlannerView />
+    <RadzenYearView />
     <RadzenYearTimelineView />
 </RadzenScheduler>
 @code {
@@ -32,54 +25,61 @@
         {
             while (!(startDate.Year == 2024 && startDate.Month == 4))
             {
-                if (startDate.Date.DayOfWeek == DayOfWeek.Saturday || startDate.Date.DayOfWeek == DayOfWeek.Sunday)
+                if (startDate.DayOfWeek == DayOfWeek.Saturday)
                 {
-                    apDatas.Add(new AppointmentData()
-                        {
-                            Start = startDate.Date,
-                            End = startDate.Date,
-                            Text = "会社休日",
-                            Data = "test"
-                        });
+                    apDatas.Add(new AppointmentData() { Start = startDate, End = startDate, Text = "会社休日", });
+                }
+                else if (startDate.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    apDatas.Add(new AppointmentData() { Start = startDate, End = startDate, Text = "会社休日", });
                 }
 
                 startDate = startDate.AddDays(1);
             }
-            apDatas.Add(new AppointmentData()
-                {
-                    Start = new DateTime(2023, 5, 1),
-                    End = new DateTime(2023, 5, 2),
-                    Text = "会社休日",
-                    Data = "test"
-                });
-            apDatas.Add(new AppointmentData()
-                {
-                    Start = new DateTime(2023, 5, 1),
-                    End = new DateTime(2023, 5, 2),
-                    Text = "会社休日",
-                    Data = "test"
-                });
-            apDatas.Add(new AppointmentData()
-                {
-                    Start = new DateTime(2023, 5, 1),
-                    End = new DateTime(2023, 5, 2),
-                    Text = "会社休日",
-                    Data = "test"
-                });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2023, 04, 29), End = new DateTime(2023, 04, 29), Text = "昭和の日" });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2023, 05, 03), End = new DateTime(2023, 05, 03), Text = "憲法記念日" });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2023, 05, 04), End = new DateTime(2023, 05, 04), Text = "みどりの日" });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2023, 05, 05), End = new DateTime(2023, 05, 05), Text = "こどもの日" });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2023, 07, 17), End = new DateTime(2023, 07, 17), Text = "海の日" });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2023, 08, 11), End = new DateTime(2023, 08, 11), Text = "山の日" });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2023, 09, 18), End = new DateTime(2023, 09, 18), Text = "敬老の日" });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2023, 09, 23), End = new DateTime(2023, 09, 23), Text = "秋分の日" });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2023, 10, 09), End = new DateTime(2023, 10, 09), Text = "スポーツの日" });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2023, 11, 03), End = new DateTime(2023, 11, 03), Text = "文化の日" });
+            //apDatas.Add(new AppointmentData() { Start = new DateTime(2023, 11, 23), End = new DateTime(2023, 11, 23), Text = "勤労感謝の日" });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2024, 01, 01), End = new DateTime(2024, 01, 01), Text = "元日" });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2024, 01, 08), End = new DateTime(2024, 01, 08), Text = "成人の日" });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2024, 02, 11), End = new DateTime(2024, 02, 11), Text = "建国記念の日" });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2024, 02, 12), End = new DateTime(2024, 02, 12), Text = "振替休日" });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2024, 02, 23), End = new DateTime(2024, 02, 23), Text = "天皇誕生日" });
+            apDatas.Add(new AppointmentData() { Start = new DateTime(2024, 03, 20), End = new DateTime(2024, 03, 20), Text = "春分の日" });
         });
 
+        apDatas.Add(new AppointmentData() { Start = new DateTime(2023, 5, 1), End = new DateTime(2023, 5, 3), Text = "年休取得促進日" });
+        apDatas.Add(new AppointmentData() { Start = new DateTime(2023, 8, 5), End = new DateTime(2023, 8, 15), Text = "夏休み(前半)" });
+        apDatas.Add(new AppointmentData() { Start = new DateTime(2023, 8, 11), End = new DateTime(2023, 8, 21), Text = "夏休み(後半)" });
+        apDatas.Add(new AppointmentData() { Start = new DateTime(2023, 12, 29), End = new DateTime(2024, 1, 7), Text = "お正月" });
+        var _ = scheduler;
     }
 
     void OnSlotRender(SchedulerSlotRenderEventArgs args)
     {
+        if (args.Start.DayOfWeek == DayOfWeek.Saturday)
+        {
+            args.Attributes["style"] = $"color: #000000; background-color: #00ced1; margin: 0px 0px 0px 0px;";
+        }
+        else if (args.Start.DayOfWeek == DayOfWeek.Sunday)
+        {
+            args.Attributes["style"] = $"color: #000000; background-color: #f08080; margin: 0px 0px 0px 0px;";
+        }
 
     }
 
-    void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<AppointmentData>
-    args)
+    void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<AppointmentData> args)
     {
-        args.Attributes["style"] = $"color: {fontcolors[0]};background-color: {backcolors[0]}; margin: 0px 0px 0px 0px;";
+        args.Attributes["style"] = $"color: #000000; background-color: #f5deb3; margin: 0px 0px 0px 0px;";
 
     }
 
 }
+
