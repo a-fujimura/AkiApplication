@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AkiTemplate.Approachable;
+using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Text.Json;
+using static AkiTemplate.Approachable.CsvWrapper;
 
 namespace AkiApplication.Controllers
 {
@@ -198,7 +200,53 @@ namespace AkiApplication.Controllers
             }
         }
 
-        [Route("schedule/get/{mode}")]
+		[Route("disbursement/upload/{year}/{month}")]
+		public async Task<IActionResult> UploadDisbursement(string year, string month, IFormFile file)
+		{
+			try
+			{
+				ICsv csv = new CsvWrapper();
+				var rslt = new List<TransactionDetails>();
+				var path = Path.Combine(environment.WebRootPath + @"\disbursement", $"{year}\\{month}.txt");
+
+				if (Directory.Exists(Path.Combine(environment.WebRootPath + @"\disbursement", $"{year}")))
+				{
+				}
+				else
+				{
+					Directory.CreateDirectory(Path.Combine(environment.WebRootPath + @"\disbursement", $"{year}"));
+				}
+
+				using (var memoryStream = new MemoryStream())
+				{
+					await file.CopyToAsync(memoryStream);
+					var data2 = memoryStream.ToArray();
+					using var fs = new FileStream(path, FileMode.Create, FileAccess.Write);
+					fs.Write(data2, 0, data2.Length);
+					fs.Close();
+				};
+
+				foreach (var i in csv.ReadCsvFile<CsvCulumn0>(path))
+				{
+					rslt.Add(new TransactionDetails()
+					{
+						Datetime = DateTime.Parse(i.Column0),
+						Memo = i.Column1,
+						Mony = int.Parse(i.Column2)
+					});
+				}
+
+				System.IO.File.WriteAllText(path, JsonSerializer.Serialize(rslt));
+
+				return StatusCode(200);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, ex.Message);
+			}
+		}
+
+		[Route("schedule/get/{mode}")]
         public async Task<IActionResult> GetSchedule(string mode)
         {
             try
@@ -255,11 +303,6 @@ namespace AkiApplication.Controllers
 
         public class TransactionDetails
         {
-            public enum Details
-            {
-                Receipt = 0,
-                Disbursement,
-            }
             public DateTime Datetime { get; set; }
             public string Memo { get; set; }
             public int Mony { get; set; } = -1;
